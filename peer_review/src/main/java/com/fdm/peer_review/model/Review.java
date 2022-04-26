@@ -61,6 +61,9 @@ public class Review {
     
     @Column(name = "knowledge_rating")
     private int knowledgeRating;
+    
+    @Column(name = "comment")
+    private String comment;
 
     public Review() {
 	super();
@@ -305,6 +308,15 @@ public class Review {
         } else {
             this.knowledgeRating = knowledgeRating;
 	}
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
 

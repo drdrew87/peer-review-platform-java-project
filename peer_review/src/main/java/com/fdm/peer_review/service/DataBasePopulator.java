@@ -45,7 +45,13 @@ public class DataBasePopulator {
     
     public void addTestAccount() {
 	Employee test = new Employee("Test","Test", "test", "test", "M", departmentRepo.getById(3), permissionRepo.getById(4));
+	Employee trainee = new Employee("Test","Test", "trainee", "trainee", "F", departmentRepo.getById(1), permissionRepo.getById(1));
+	Employee trainer = new Employee("Test","Test", "trainer", "trainer", "M", departmentRepo.getById(2), permissionRepo.getById(2));
+	Employee hr = new Employee("Test","Test", "hr", "hr", "F", departmentRepo.getById(3), permissionRepo.getById(3));
 	emRepo.save(test);
+	emRepo.save(trainee);
+	emRepo.save(trainer);
+	emRepo.save(hr);
     }
 }
 

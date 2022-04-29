@@ -42,6 +42,9 @@ public class Employee {
     @Column(name = "password")
     private String passWord;
     
+    @Column(name = "gender")
+    private String gender;
+    
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "department_id")
     private Department department;
@@ -54,13 +57,14 @@ public class Employee {
 	super();
     }
     
-    public Employee(String firstName, String lastName, String userName, String passWord,
+    public Employee(String firstName, String lastName, String userName, String passWord, String gender,
 	    Department department, Permission permission) {
 	super();
 	this.firstName = firstName;
 	this.lastName = lastName;
 	this.userName = userName;
 	this.passWord = passWord;
+	this.gender = gender;
 	this.department = department;
 	this.permission = permission;
     }
@@ -170,7 +174,15 @@ public class Employee {
         this.passWord = passWord;
     }
 
+    
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
     public Department getDepartment() {
         return department;

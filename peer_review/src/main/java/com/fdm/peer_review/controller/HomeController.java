@@ -6,12 +6,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fdm.peer_review.model.Employee;
 import com.fdm.peer_review.repo.DepartmentRepo;
 import com.fdm.peer_review.repo.EmployeeRepo;
 import com.fdm.peer_review.repo.PermissionRepo;
 import com.fdm.peer_review.service.DataBasePopulator;
+import com.fdm.peer_review.service.LoginValidator;
 import com.fdm.peer_review.service.RegistrationValidator;
 
 
@@ -27,6 +29,8 @@ public class HomeController {
     private RegistrationValidator registrationValidator;
     @Autowired
     private DataBasePopulator dataBasePopulator;
+    @Autowired
+    private LoginValidator loginValidator;
     
     @GetMapping("/")
     public String goToLandingPage(Model model) {
@@ -40,12 +44,17 @@ public class HomeController {
     }
 
     @PostMapping("/")
-    public String logInUser() {
-	return "profile";
+    public String logInUser(Model model, @RequestParam String username, @RequestParam String passsword) {
+	if (loginValidator.validate(username, passsword)) {
+	    model.addAttribute("username", username);
+	    return "@{/profile/"+username+"}";
+	} else {
+	    return "index";
+	}
+	
     }
     
     
-
     @GetMapping("/register")
     public String goToRegisterPage(Model model) {
         model.addAttribute("employee", new Employee());
@@ -55,21 +64,17 @@ public class HomeController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String department, @RequestParam String permission, Model model, Employee employee) {
+    public String registerUser(@RequestParam String department, @RequestParam String permission, RedirectAttributes attributes, Employee employee) {
         if (registrationValidator.validate(employee)) {
             employee.setDepartment(departmentRepo.getById(Integer.valueOf(department)));
             employee.setPermission(permissionRepo.getById(Integer.valueOf(permission)));
             employeeRepo.save(employee);
-            return "redirect:/registrationSuccessful";
+            attributes.addFlashAttribute("registerSuccessful", true);
+            return "redirect:/";
         } else {
             return "register";
         }
 	
     }
     
-    @GetMapping("/registrationSuccessful")
-    public String registerUser(Model model) {
-	model.addAttribute("registerSuccessful", true);	
-        return "index";
-    }
 }

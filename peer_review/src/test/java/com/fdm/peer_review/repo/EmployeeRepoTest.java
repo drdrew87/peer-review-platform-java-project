@@ -41,14 +41,14 @@ public class EmployeeRepoTest {
     
     @Test
     void test_EmployeeRepo_saveEmployeeToDatabase() {
-	Employee em = new Employee("John", "Doe", "joe.doe", "12345", dept1, perm1);
+	Employee em = new Employee("John", "Doe", "joe.doe", "12345", "M", dept1, perm1);
 	emRepo.save(em);
 	assertEquals(1, emRepo.count());
     }
     
     @Test
     void test_EmployeeRepo_deleteEmployeeFromDatabase() {
-	Employee em = new Employee("John", "Doe", "joe.doe", "12345", dept1, perm1);
+	Employee em = new Employee("John", "Doe", "joe.doe", "12345", "M",dept1, perm1);
 	emRepo.save(em);
 	emRepo.delete(em);
 	assertEquals(0, emRepo.count());
@@ -56,7 +56,7 @@ public class EmployeeRepoTest {
     
     @Test
     void test_EmployeeRepo_getByUserName() {
-	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", dept1, perm1);
+	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", "M",dept1, perm1);
 	emRepo.save(em1);
 	Employee result = emRepo.getByUserName("joe.doe");
 	assertEquals("12345", result.getPassWord());
@@ -64,9 +64,9 @@ public class EmployeeRepoTest {
     
     @Test
     void test_EmployeeRepo_getByFirstName() {
-	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", dept1, perm1);
+	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", "M",dept1, perm1);
 	emRepo.save(em1);
-	Employee em2 = new Employee("John", "Curry", "curry", "12345", dept1, perm1);
+	Employee em2 = new Employee("John", "Curry", "curry", "12345", "M",dept1, perm1);
 	emRepo.save(em2);
 	ArrayList<Employee> resultList = (ArrayList<Employee>) emRepo.getByFirstName("John");
 	assertEquals(2, resultList.size());
@@ -75,9 +75,9 @@ public class EmployeeRepoTest {
     
     @Test
     void test_EmployeeRepo_getByLastName() {
-	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", dept1, perm1);
+	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", "M",dept1, perm1);
 	emRepo.save(em1);
-	Employee em2 = new Employee("John", "Curry", "curry", "12345", dept1, perm1);
+	Employee em2 = new Employee("John", "Curry", "curry", "12345", "M",dept1, perm1);
 	emRepo.save(em2);
 	ArrayList<Employee> resultList = (ArrayList<Employee>) emRepo.getByLastName("Curry");
 	assertEquals(1, resultList.size());
@@ -86,9 +86,9 @@ public class EmployeeRepoTest {
     
     @Test
     void test_EmployeeRepo_getByDepartment() {
-	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", dept1, perm1);
+	Employee em1 = new Employee("John", "Doe", "joe.doe", "12345", "M",dept1, perm1);
 	emRepo.save(em1);
-	Employee em2 = new Employee("John", "Curry", "curry", "12345", dept1, perm1);
+	Employee em2 = new Employee("John", "Curry", "curry", "12345", "M",dept1, perm1);
 	emRepo.save(em2);
 	ArrayList<Employee> resultList = (ArrayList<Employee>) emRepo.getByDepartment(dept1);
 	assertEquals(2, resultList.size());

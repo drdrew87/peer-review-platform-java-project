@@ -51,9 +51,9 @@ public class ReviewRepoTest {
 	RRRepo.save(reviewRound2);
 	
 
-	em1 = new Employee("John", "Doe", "joe.doe", "12345", dept, perm);
-	em2 = new Employee("Foo", "Bar", "foo.bar", "54321", dept, perm);
-	em3 = new Employee("Micky", "Mouse", "mmouse", "abc123", dept, perm);
+	em1 = new Employee("John", "Doe", "joe.doe", "12345","M", dept, perm);
+	em2 = new Employee("Foo", "Bar", "foo.bar", "54321","M", dept, perm);
+	em3 = new Employee("Micky", "Mouse", "mmouse", "abc123","M", dept, perm);
 	emRepo.save(em1);
 	emRepo.save(em2);
 	emRepo.save(em3);
@@ -168,25 +168,36 @@ public class ReviewRepoTest {
     @Test
     void test_confirm_PKConstraintIsWorking() {
 	Review review1 = new Review(new ReviewPK(reviewRound1, em3, em1));
+	RRepo.save(review1);
 	Review review2 = new Review(new ReviewPK(reviewRound1, em3, em2));
+	RRepo.save(review2);
+	
 	Review review3 = new Review(new ReviewPK(reviewRound2, em2, em1));
+	RRepo.save(review3);
+	
 	Review review4 = new Review(new ReviewPK(reviewRound2, em2, em3));
+	RRepo.save(review4);
+	ArrayList<Review> resultList1 = (ArrayList<Review>) RRepo.findAll();
+	assertEquals(4, resultList1.size());
 	
 	Review review5 = new Review(new ReviewPK(reviewRound1, em3, em1));
+	RRepo.save(review5);
+	ArrayList<Review> resultList2 = (ArrayList<Review>) RRepo.findAll();
+	assertEquals(4, resultList2.size());
+	
 	Review review6 = new Review(new ReviewPK(reviewRound1, em3, em2));
+	RRepo.save(review6);
+	ArrayList<Review> resultList3 = (ArrayList<Review>) RRepo.findAll();
+	assertEquals(4, resultList3.size());
 	
 	Review review7 = new Review(new ReviewPK(reviewRound2, em3, em1));
-	Review review8 = new Review(new ReviewPK(reviewRound2, em3, em2));
-	RRepo.save(review1);
-	RRepo.save(review2);
-	RRepo.save(review3);
-	RRepo.save(review4);
-	RRepo.save(review5);
-	RRepo.save(review6);
 	RRepo.save(review7);
-	RRepo.save(review8);
+	ArrayList<Review> resultList4 = (ArrayList<Review>) RRepo.findAll();
+	assertEquals(5, resultList4.size());
 	
-	ArrayList<Review> resultList1 = (ArrayList<Review>) RRepo.findAll();
-	assertEquals(6, resultList1.size());
+	Review review8 = new Review(new ReviewPK(reviewRound2, em3, em2));
+	RRepo.save(review8);
+	ArrayList<Review> resultList5 = (ArrayList<Review>) RRepo.findAll();
+	assertEquals(6, resultList5.size());
     }
 }

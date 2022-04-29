@@ -17,7 +17,7 @@ public class RegistrationValidator {
     }
     
     public boolean validate(Employee employee) {
-	boolean isValid = (employeeRepo.findByUserName(employee.getUserName())==null);
+	boolean isValid = (employeeRepo.getByUserName(employee.getUserName())==null);
 	return isValid;
     }
     

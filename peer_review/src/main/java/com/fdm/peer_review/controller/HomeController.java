@@ -1,5 +1,7 @@
 package com.fdm.peer_review.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,15 +42,21 @@ public class HomeController {
 	if(departmentRepo.count()<1) {
 	    dataBasePopulator.populateDepartments();
 	}
+	if (employeeRepo.count()<1) {
+	    dataBasePopulator.addTestAccount();
+	}
+	
 	return "index";
     }
 
     @PostMapping("/")
-    public String logInUser(Model model, @RequestParam String username, @RequestParam String passsword) {
-	if (loginValidator.validate(username, passsword)) {
-	    model.addAttribute("username", username);
-	    return "@{/profile/"+username+"}";
+    public String logInUser(Model model, RedirectAttributes attributes, @RequestParam String username, @RequestParam String password, HttpServletRequest request) {
+	if (loginValidator.validate(username, password)) {
+	    attributes.addFlashAttribute("username", username);
+	    request.getSession().setAttribute("username", username);
+	    return "redirect:/profile/"+username;
 	} else {
+	    model.addAttribute("invalidLogin", true);
 	    return "index";
 	}
 	
@@ -64,15 +72,20 @@ public class HomeController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String department, @RequestParam String permission, RedirectAttributes attributes, Employee employee) {
-        if (registrationValidator.validate(employee)) {
+    public String registerUser(@RequestParam String confirm_password, @RequestParam String department, @RequestParam String permission, RedirectAttributes attributes, Employee employee) {
+	if (!employee.getPassWord().equals(confirm_password)) {
+	    attributes.addFlashAttribute("passwordMismatched", true);
+            return "redirect:/register";
+        }
+	if (registrationValidator.validate(employee)) {
             employee.setDepartment(departmentRepo.getById(Integer.valueOf(department)));
             employee.setPermission(permissionRepo.getById(Integer.valueOf(permission)));
             employeeRepo.save(employee);
             attributes.addFlashAttribute("registerSuccessful", true);
             return "redirect:/";
         } else {
-            return "register";
+            attributes.addFlashAttribute("accountIsTaken", true);
+            return "redirect:/register";
         }
 	
     }

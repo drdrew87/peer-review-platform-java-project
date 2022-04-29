@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fdm.peer_review.model.Department;
+import com.fdm.peer_review.model.Employee;
 import com.fdm.peer_review.model.Permission;
 import com.fdm.peer_review.repo.DepartmentRepo;
+import com.fdm.peer_review.repo.EmployeeRepo;
 import com.fdm.peer_review.repo.PermissionRepo;
 
 @Service
@@ -17,6 +19,8 @@ public class DataBasePopulator {
     private DepartmentRepo departmentRepo;
     @Autowired
     private PermissionRepo permissionRepo;
+    @Autowired
+    private EmployeeRepo emRepo;
     
     public void populateDepartments() {
 	Department academy = new Department("Academy");
@@ -37,6 +41,11 @@ public class DataBasePopulator {
 	Permission HRManager = new Permission("HR Manager",true, true);
 	permissionRepo.save(HRManager);
 	
+    }
+    
+    public void addTestAccount() {
+	Employee test = new Employee("Test","Test", "test", "test", "M", departmentRepo.getById(3), permissionRepo.getById(4));
+	emRepo.save(test);
     }
 }
 

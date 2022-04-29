@@ -17,7 +17,12 @@ public class ProfileController {
     @Autowired
     private EmployeeRepo employeeRepo;
     
-    @GetMapping("/profile/{username}")
+    @GetMapping("/profile")
+    public String DirectAccessToProfilePage() {
+	return "redirect:/";
+    }
+    
+    @GetMapping("/profile/{username}/MyRatings")
     public String LogInToProfilePage(@PathVariable String username, HttpServletRequest request, Model model) {
 	HttpSession session = request.getSession();
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
@@ -26,15 +31,23 @@ public class ProfileController {
 		session.setAttribute("allTabs", true);
 		model.addAttribute("allTabs",true);
 	    }
-	    return "profile";
+	    return "profile1";
 	} else {
 	    return "index";
 	}
     }
     
-    @GetMapping("/profile")
-    public String DirectAccessToProfilePage() {
-	return "redirect:/";
+    @GetMapping("/profile/{username}/OpenReviews")
+    public String viewOpenReviews(@PathVariable String username, HttpServletRequest request, Model model) {
+	HttpSession session = request.getSession();
+	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
+	    if(session.getAttribute("allTabs")!=null) {
+		model.addAttribute("allTabs",true);
+	    }
+	    return "profile2";
+	} else {
+	    return "index";
+	}
     }
     
    

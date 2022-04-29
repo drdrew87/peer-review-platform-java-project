@@ -54,7 +54,7 @@ public class HomeController {
 	if (loginValidator.validate(username, password)) {
 	    attributes.addFlashAttribute("username", username);
 	    request.getSession().setAttribute("username", username);
-	    return "redirect:/profile/"+username;
+	    return "redirect:/profile/"+username+"/MyRatings";
 	} else {
 	    model.addAttribute("invalidLogin", true);
 	    return "index";

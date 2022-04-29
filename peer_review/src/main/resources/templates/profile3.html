@@ -2,7 +2,7 @@
 <html xmlns:th= " http://www.thymeleaf.org " >
 <head>
 <meta charset="utf-8">
-<title>Peer Review Platform - Login</title>
+<title>Peer Review Platform - Profile</title>
 <link th:rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css} "/>
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
 	<symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
@@ -21,7 +21,7 @@
 	<div class="container sticky-top">
 		<nav class="navbar navbar-light">
 			<div class="d-flex justify-content-start">
-			<a class="navbar-brand fs-2" roie="link" aria-disabled="true">Peer Review Platform</a>
+			<a class="navbar-brand fs-2" role="link" aria-disabled="true">Peer Review Platform</a>
 			</div>
 			<div class="d-flex justify-content-end">
 			<form class="form-inline" th:action="@{/logout}" method="get">	
@@ -39,16 +39,16 @@
 		<div class="container mt-4">
             <ul class="nav nav-tabs">
                 <li class="nav-item col-3">
-                  <a class="nav-link active" aria-current="page" href="#">My Ratings</a>
+                  <a class="nav-link" th:href="@{/profile/{username}/MyRatings(username=${username})}">My Ratings</a>
                 </li>
                 <li class="nav-item col-3">
-                  <a class="nav-link" href="#">Open Reviews</a>
+                  <a class="nav-link" th:href="@{/profile/{username}/MyRatings(username=${username})}">Open Reviews</a>
                 </li>
                 <li th:if="${allTabs}" class="nav-item col-3">
-                  <a class="nav-link" href="#">Team Ratings</a>
+                  <a class="nav-link active" aria-current="page" th:href="@{/profile/{username}/MyRatings(username=${username})}">Team Ratings</a>
                 </li>
                 <li th:if="${allTabs}" class="nav-item col-3">
-                    <a class="nav-link" href="#">Create Review Round</a>
+                    <a class="nav-link" th:href="@{/profile/{username}/MyRatings(username=${username})}">Create Review Round</a>
                 </li>
               </ul>
         </div>

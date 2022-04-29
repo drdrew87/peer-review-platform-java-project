@@ -22,25 +22,74 @@ public class ReviewPK implements Serializable{
     private static final long serialVersionUID = 1L;
     
     
-    ReviewRound reviewRound;
-    Employee reviewer;
-    Employee recipient;
+    private int reviewRoundId;
+    private int reviewerId;
+    private int recipientId;
     
     public ReviewPK() {
 	super();
     }
     
+    
+
+    public ReviewPK(int reviewRoundId, int reviewerId, int recipientId) {
+	super();
+	this.reviewRoundId = reviewRoundId;
+	this.reviewerId = reviewerId;
+	this.recipientId = recipientId;
+    }
+    
     public ReviewPK(ReviewRound reviewRound, Employee reviewer, Employee recipient) {
 	super();
-	this.reviewRound = reviewRound;
-	this.reviewer = reviewer;
-	this.recipient = recipient;
+	this.reviewRoundId = reviewRound.getReviewRoundId();
+	this.reviewerId = reviewer.getEmployeeId();
+	this.recipientId = recipient.getEmployeeId();
     }
+    
+    
+
+
+    public int getReviewRoundId() {
+        return reviewRoundId;
+    }
+
+
+
+    public void setReviewRoundId(int reviewRoundId) {
+        this.reviewRoundId = reviewRoundId;
+    }
+
+
+
+    public int getReviewerId() {
+        return reviewerId;
+    }
+
+
+
+    public void setReviewerId(int reviewerId) {
+        this.reviewerId = reviewerId;
+    }
+
+
+
+    public int getRecipientId() {
+        return recipientId;
+    }
+
+
+
+    public void setRecipientId(int recipientId) {
+        this.recipientId = recipientId;
+    }
+
+
 
     @Override
     public int hashCode() {
-	return Objects.hash(recipient, reviewRound, reviewer);
+	return Objects.hash(recipientId, reviewRoundId, reviewerId);
     }
+
     @Override
     public boolean equals(Object obj) {
 	if (this == obj)
@@ -50,7 +99,9 @@ public class ReviewPK implements Serializable{
 	if (getClass() != obj.getClass())
 	    return false;
 	ReviewPK other = (ReviewPK) obj;
-	return Objects.equals(recipient, other.recipient) && Objects.equals(reviewRound, other.reviewRound)
-		&& Objects.equals(reviewer, other.reviewer);
+	return recipientId == other.recipientId && reviewRoundId == other.reviewRoundId
+		&& reviewerId == other.reviewerId;
     }
+    
+    
 }

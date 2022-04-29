@@ -22,18 +22,15 @@ public class Review {
     
     @Id
     @JoinColumn(name = "review_round_id", referencedColumnName = "review_round_id")
-    @ManyToOne
-    private ReviewRound reviewRound;
+    private int reviewRoundId;
     
     @Id
     @JoinColumn(name = "reviewer_id", referencedColumnName = "employee_id")
-    @ManyToOne
-    private Employee reviewer;
+    private int reviewerId;
     
     @Id
     @JoinColumn(name = "recipient_id", referencedColumnName = "employee_id")
-    @ManyToOne
-    private Employee recipient;
+    private int recipientId;
     
     @Column(name = "completion_date")
     private Date completionDate;
@@ -69,21 +66,27 @@ public class Review {
 	super();
     }
     
+    public Review(ReviewPK reviewPK) {
+	super();
+	this.reviewRoundId = reviewPK.getReviewRoundId();
+	this.reviewerId = reviewPK.getReviewerId();
+	this.recipientId = reviewPK.getRecipientId();
+    }
     
     public Review(ReviewRound reviewRound, Employee reviewer, Employee recipient) {
 	super();
-	this.reviewRound = reviewRound;
-	this.reviewer = reviewer;
-	this.recipient = recipient;
+	this.reviewRoundId = reviewRound.getReviewRoundId();
+	this.reviewerId = reviewer.getEmployeeId();
+	this.recipientId = recipient.getEmployeeId();
     }
     
     
 
     public Review(ReviewRound reviewRound, Employee reviewer, Employee recipient, Date completionDate) {
 	super();
-	this.reviewRound = reviewRound;
-	this.reviewer = reviewer;
-	this.recipient = recipient;
+	this.reviewRoundId = reviewRound.getReviewRoundId();
+	this.reviewerId = reviewer.getEmployeeId();
+	this.recipientId = recipient.getEmployeeId();
 	this.completionDate = completionDate;
     }
 
@@ -92,9 +95,9 @@ public class Review {
 	    int qualityOfWorkRating, int punctualityRating, int reliabilityRating, int communicationSkillRating,
 	    int decisionMakingRating, int initiativeRating, int teamworkRating, int knowledgeRating) {
 	super();
-	this.reviewRound = reviewRound;
-	this.reviewer = reviewer;
-	this.recipient = recipient;
+	this.reviewRoundId = reviewRound.getReviewRoundId();
+	this.reviewerId = reviewer.getEmployeeId();
+	this.recipientId = recipient.getEmployeeId();
 	this.completionDate = completionDate;
 	
 	if (qualityOfWorkRating<0) {
@@ -162,32 +165,30 @@ public class Review {
 	}
     }
 
-    public ReviewRound getReviewRound() {
-        return reviewRound;
+    
+
+    public int getReviewRoundId() {
+        return reviewRoundId;
     }
 
-    public void setReviewRound(ReviewRound reviewRound) {
-        this.reviewRound = reviewRound;
+    public void setReviewRoundId(int reviewRoundId) {
+        this.reviewRoundId = reviewRoundId;
     }
 
-    public Employee getReviewer() {
-        return reviewer;
+    public int getReviewerId() {
+        return reviewerId;
     }
 
-    public void setReviewer(Employee reviewer) {
-        this.reviewer = reviewer;
+    public void setReviewerId(int reviewerId) {
+        this.reviewerId = reviewerId;
     }
 
-    public Employee getRecipient() {
-        return recipient;
+    public int getRecipientId() {
+        return recipientId;
     }
 
-    public void setRecipient(Employee recipient) {
-        this.recipient = recipient;
-    }
-
-    public void setRecipientId(Employee recipientId) {
-        this.recipient = recipientId;
+    public void setRecipientId(int recipientId) {
+        this.recipientId = recipientId;
     }
 
     public Date getCompletionDate() {
@@ -319,12 +320,10 @@ public class Review {
         this.comment = comment;
     }
 
-
     @Override
     public int hashCode() {
-	return Objects.hash(recipient, reviewRound, reviewer);
+	return Objects.hash(recipientId, reviewRoundId, reviewerId);
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -335,9 +334,12 @@ public class Review {
 	if (getClass() != obj.getClass())
 	    return false;
 	Review other = (Review) obj;
-	return Objects.equals(recipient, other.recipient) && Objects.equals(reviewRound, other.reviewRound)
-		&& Objects.equals(reviewer, other.reviewer);
+	return recipientId == other.recipientId && reviewRoundId == other.reviewRoundId
+		&& reviewerId == other.reviewerId;
     }
+
+
+
 
 
 }

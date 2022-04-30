@@ -2,14 +2,6 @@ package com.fdm.peer_review.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.fdm.peer_review.model.Employee;
 import com.fdm.peer_review.repo.DepartmentRepo;
 import com.fdm.peer_review.repo.EmployeeRepo;
@@ -17,6 +9,14 @@ import com.fdm.peer_review.repo.PermissionRepo;
 import com.fdm.peer_review.service.DataBasePopulator;
 import com.fdm.peer_review.service.LoginValidator;
 import com.fdm.peer_review.service.RegistrationValidator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller

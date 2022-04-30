@@ -1,15 +1,5 @@
 package com.fdm.peer_review.mvc;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 import com.fdm.peer_review.repo.DepartmentRepo;
 import com.fdm.peer_review.repo.EmployeeRepo;
 import com.fdm.peer_review.repo.PermissionRepo;
@@ -17,6 +7,14 @@ import com.fdm.peer_review.repo.ReviewRepo;
 import com.fdm.peer_review.repo.ReviewRoundRepo;
 import com.fdm.peer_review.service.DataBasePopulator;
 import com.fdm.peer_review.service.RegistrationValidator;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 
 @WebMvcTest

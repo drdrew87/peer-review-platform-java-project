@@ -1,9 +1,10 @@
 package com.fdm.peer_review.repo;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -139,11 +140,11 @@ public class ReviewRepoTest {
 	RRepo.save(review2);
 	RRepo.save(review3);
 	RRepo.save(review4);
-	ArrayList<Review> resultList1 = (ArrayList<Review>) RRepo.getByRoundIdAndRecipientId(reviewRound1.getReviewRoundId(), em3.getEmployeeId());
+	ArrayList<Review> resultList1 = (ArrayList<Review>) RRepo.getByReviewRoundIdAndRecipientId(reviewRound1.getReviewRoundId(), em3.getEmployeeId());
 	assertEquals(0, resultList1.size());
-	ArrayList<Review> resultList2 = (ArrayList<Review>) RRepo.getByRoundIdAndRecipientId(reviewRound2.getReviewRoundId(), em1.getEmployeeId());
+	ArrayList<Review> resultList2 = (ArrayList<Review>) RRepo.getByReviewRoundIdAndRecipientId(reviewRound2.getReviewRoundId(), em1.getEmployeeId());
 	assertEquals(1, resultList2.size());
-	ArrayList<Review> resultList3 = (ArrayList<Review>) RRepo.getByRoundIdAndRecipientId(reviewRound1.getReviewRoundId(), em3.getEmployeeId());
+	ArrayList<Review> resultList3 = (ArrayList<Review>) RRepo.getByReviewRoundIdAndRecipientId(reviewRound1.getReviewRoundId(), em3.getEmployeeId());
 	assertEquals(0, resultList3.size());
     }
     
@@ -157,11 +158,11 @@ public class ReviewRepoTest {
 	RRepo.save(review2);
 	RRepo.save(review3);
 	RRepo.save(review4);
-	ArrayList<Review> resultList1 = (ArrayList<Review>) RRepo.getByRoundIdAndReviewerId(reviewRound1.getReviewRoundId(), em3.getEmployeeId());
+	ArrayList<Review> resultList1 = (ArrayList<Review>) RRepo.getByReviewRoundIdAndReviewerId(reviewRound1.getReviewRoundId(), em3.getEmployeeId());
 	assertEquals(2, resultList1.size());
-	ArrayList<Review> resultList2 = (ArrayList<Review>) RRepo.getByRoundIdAndReviewerId(reviewRound2.getReviewRoundId(), em1.getEmployeeId());
+	ArrayList<Review> resultList2 = (ArrayList<Review>) RRepo.getByReviewRoundIdAndReviewerId(reviewRound2.getReviewRoundId(), em1.getEmployeeId());
 	assertEquals(0, resultList2.size());
-	ArrayList<Review> resultList3 = (ArrayList<Review>) RRepo.getByRoundIdAndReviewerId(reviewRound2.getReviewRoundId(), em2.getEmployeeId());
+	ArrayList<Review> resultList3 = (ArrayList<Review>) RRepo.getByReviewRoundIdAndReviewerId(reviewRound2.getReviewRoundId(), em2.getEmployeeId());
 	assertEquals(2, resultList3.size());
     }
     
@@ -200,4 +201,98 @@ public class ReviewRepoTest {
 	ArrayList<Review> resultList5 = (ArrayList<Review>) RRepo.findAll();
 	assertEquals(6, resultList5.size());
     }
+
+    @Test
+    void tes_ReviewRepo_getByReviewRoundIdIn() {
+	Review review1 = new Review(new ReviewPK(reviewRound1, em3, em1));
+	RRepo.save(review1);
+	Review review2 = new Review(new ReviewPK(reviewRound1, em3, em2));
+	RRepo.save(review2);
+	Review review3 = new Review(new ReviewPK(reviewRound2, em2, em1));
+	RRepo.save(review3);
+	Review review4 = new Review(new ReviewPK(reviewRound2, em2, em3));
+	RRepo.save(review4);
+	List<Integer> reviewRoundList = new ArrayList<Integer>();
+	ArrayList<Review> resultList = (ArrayList<Review>) RRepo.getByReviewRoundIdIn(reviewRoundList);
+	assertEquals(0, resultList.size());
+	
+	reviewRoundList.add(reviewRound1.getReviewRoundId());
+	resultList = (ArrayList<Review>) RRepo.getByReviewRoundIdIn(reviewRoundList);
+	assertEquals(2, resultList.size());
+	
+	reviewRoundList.add(reviewRound2.getReviewRoundId());
+	resultList = (ArrayList<Review>) RRepo.getByReviewRoundIdIn(reviewRoundList);
+	assertEquals(4, resultList.size());
+    } 
+    
+    @Test
+    void tes_ReviewRepo_getByCompletionDateIsNullAndReviewRoundIdIn() {
+	Review review1 = new Review(new ReviewPK(reviewRound1, em3, em1));
+	RRepo.save(review1);
+	Review review2 = new Review(new ReviewPK(reviewRound1, em3, em2));
+	RRepo.save(review2);
+	Review review3 = new Review(new ReviewPK(reviewRound2, em2, em1));
+	RRepo.save(review3);
+	Review review4 = new Review(new ReviewPK(reviewRound2, em2, em3));
+	RRepo.save(review4);
+	List<Integer> reviewRoundList = new ArrayList<Integer>();
+	ArrayList<Review> resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(0, resultList.size());
+	
+	reviewRoundList.add(reviewRound1.getReviewRoundId());
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(2, resultList.size());
+	
+	reviewRoundList.add(reviewRound2.getReviewRoundId());
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(4, resultList.size());
+	
+	review4.setCompletionDate(new Date(new java.util.Date().getTime()));
+	RRepo.save(review4);
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(3, resultList.size());
+	
+	review1.setCompletionDate(new Date(new java.util.Date().getTime()));
+	RRepo.save(review1);
+	review2.setCompletionDate(new Date(new java.util.Date().getTime()));
+	RRepo.save(review2);
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(1, resultList.size());
+    } 
+    
+    @Test
+    void tes_ReviewRepo_getByCompletionDateIsNotNullAndReviewRoundIdIn() {
+	Review review1 = new Review(new ReviewPK(reviewRound1, em3, em1));
+	RRepo.save(review1);
+	Review review2 = new Review(new ReviewPK(reviewRound1, em3, em2));
+	RRepo.save(review2);
+	Review review3 = new Review(new ReviewPK(reviewRound2, em2, em1));
+	RRepo.save(review3);
+	Review review4 = new Review(new ReviewPK(reviewRound2, em2, em3));
+	RRepo.save(review4);
+	List<Integer> reviewRoundList = new ArrayList<Integer>();
+	
+	ArrayList<Review> resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNotNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(0, resultList.size());
+	
+	reviewRoundList.add(reviewRound1.getReviewRoundId());
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNotNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(0, resultList.size());
+	
+	reviewRoundList.add(reviewRound2.getReviewRoundId());
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNotNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(0, resultList.size());
+	
+	review4.setCompletionDate(new Date(new java.util.Date().getTime()));
+	RRepo.save(review4);
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNotNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(1, resultList.size());
+	
+	review1.setCompletionDate(new Date(new java.util.Date().getTime()));
+	RRepo.save(review1);
+	review2.setCompletionDate(new Date(new java.util.Date().getTime()));
+	RRepo.save(review2);
+	resultList = (ArrayList<Review>) RRepo.getByCompletionDateIsNotNullAndReviewRoundIdIn(reviewRoundList);
+	assertEquals(3, resultList.size());
+    } 
 }

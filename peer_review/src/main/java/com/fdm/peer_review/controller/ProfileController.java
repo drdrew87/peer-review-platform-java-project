@@ -26,8 +26,10 @@ import com.fdm.peer_review.repo.DepartmentRepo;
 import com.fdm.peer_review.repo.EmployeeRepo;
 import com.fdm.peer_review.repo.ReviewRepo;
 import com.fdm.peer_review.repo.ReviewRoundRepo;
+import com.fdm.peer_review.service.DepartmentListService;
 import com.fdm.peer_review.service.ReviewRoundCreationService;
 import com.fdm.peer_review.view.ProfileView;
+import com.fdm.peer_review.view.ReviewAveragesView;
 
 @Controller
 public class ProfileController {
@@ -41,6 +43,8 @@ public class ProfileController {
     private DepartmentRepo departmentRepo;
     @Autowired
     private ReviewRoundCreationService roundCreator;
+    @Autowired
+    private DepartmentListService deptListService;
     
     @GetMapping("/profile")
     public String DirectAccessToProfilePage() {
@@ -59,19 +63,28 @@ public class ProfileController {
 		session.setAttribute("allTabs", true);
 		model.addAttribute("allTabs",true);
 	    } else {
-		session.setAttribute("allTabs", false);
+		if (currentUser.getDepartment().getDepartmentName().equals("Trainer")) {
+		    session.setAttribute("allTabs", true);
+		    model.addAttribute("allTabs",true);
+		} else {
+		    session.setAttribute("allTabs", false);
+		}
 	    }
+	    
+	    ArrayList<Department> departmentList = (ArrayList<Department>) deptListService.generateDepartmentList(currentUser);
+	    session.setAttribute("departmentList", departmentList);
+	    
 	    
 	    ProfileView userProfile = new ProfileView(currentUser);
 	    model.addAttribute("userProfile", userProfile);
 	    
+	    ArrayList<ReviewRound> reiviewRoundList = new ArrayList<ReviewRound>();
 	    HashMap<Integer, ArrayList<Review>> reviewMapByRoundId = new HashMap<Integer, ArrayList<Review>>();
-	    ArrayList<ReviewRound> reiviewRoundList = (ArrayList<ReviewRound>) reviewRoundRepo.getClosedRoundsByDepartment(currentUser.getDepartment());
-	    for (ReviewRound reviewRound:reiviewRoundList) {
+	    ArrayList<ReviewRound> reiviewRoundListInDept = (ArrayList<ReviewRound>) reviewRoundRepo.getClosedRoundsByDepartment(currentUser.getDepartment());
+	    for (ReviewRound reviewRound : reiviewRoundListInDept) {
 		ArrayList<Review> reviewsList = (ArrayList<Review>) reviewRepo.getByReviewRoundIdAndRecipientIdAndCompletionDateIsNotNull(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
-		if (reviewsList.size()<1) {
-		    reiviewRoundList.remove(reviewRound);
-		} else {
+		if (!(reviewsList.size() < 1)) {
+		    reiviewRoundList.add(reviewRound);
 		    reviewMapByRoundId.put(reviewRound.getReviewRoundId(),reviewsList);
 		}
 	    }
@@ -79,17 +92,24 @@ public class ProfileController {
 	    model.addAttribute("reiviewRoundList", reiviewRoundList);
 	    
 	    
-	    
 	    if (reiviewRoundList.size()<1) {
 		model.addAttribute("emptyList",true);
 	    } else {
 		Integer selectedRoundId = 0;
 		if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
-		    selectedRoundId = (Integer) inputFlashMap.get("reviewRoundId");
+		    selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
+		    model.addAttribute("selectedRound", reviewRoundRepo.getById(selectedRoundId));
 		} else {
 		    selectedRoundId = reiviewRoundList.get(0).getReviewRoundId();
+		    model.addAttribute("selectedRound",reiviewRoundList.get(0));
 		    model.addAttribute("selectedRoundId",selectedRoundId);
 		}
+		
+		ReviewAveragesView reviewAverages = new ReviewAveragesView(currentUser, reviewMapByRoundId.get(selectedRoundId));
+		if (reviewAverages.getCommentList().size()>0) {
+		    model.addAttribute("showCommentList", true);
+		}
+		model.addAttribute("reviewAverages", reviewAverages);
 	    }
 	    
 	    return "profile_my_ratings";
@@ -140,27 +160,11 @@ public class ProfileController {
 	    if((boolean) session.getAttribute("allTabs")) {
 		model.addAttribute("allTabs",true);
 	    }
-	    Employee currentUser = employeeRepo.getByUserName(username);
-	    ArrayList<Department> departmentList = new ArrayList<Department>();
+
+	    @SuppressWarnings("unchecked")
+	    ArrayList<Department> departmentList = (ArrayList<Department>) session.getAttribute("departmentList");
 	    
-	    if (currentUser.getDepartment().getDepartmentName().equals("Trainer")) {
-		departmentList.add(departmentRepo.getByDepartmentName("Trainee"));
-	    }
-	    
-	    if (currentUser.getPermission().isDepartmentManager()) {
-		departmentList.add(currentUser.getDepartment());
-	    }
-	    
-	    if (currentUser.getPermission().isDepartmentManager() && currentUser.getPermission().isHR()) {
-		departmentList = (ArrayList<Department>) departmentRepo.findAll();
-	    } else if (currentUser.getPermission().isHR()) {
-		ArrayList<Department> allDepartments = (ArrayList<Department>) departmentRepo.findAll();
-		for (Department department : allDepartments) {
-		    if (!department.getDepartmentName().equals("HR")) {
-			departmentList.add(department);
-		    }
-		}
-	    }
+	   
 	    
 	    
 	    

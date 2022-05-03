@@ -83,16 +83,58 @@
 					</div>
 				</div>
 				<div th:unless="${emptyList}"> 
-					<form class="d-grid" th:object="${reiviewRoundList}" action="@{/profile/{username}/MyRatings(username=${username})}" method="post">
+					<form class="d-grid" th:object="${reiviewRoundList}" th:action="@{/profile/{username}/MyRatings(username=${username})}" method="post">
 						<div class="form-group">
-							<select class="form-control" id="selectedRoundId" name ="selectedRoundId">
+							<select onchange="this.form.submit()" class="form-control" id="selectedRoundId" name ="selectedRoundId">
+								<option selected th:object="${selectedRound}" disabled value=""><strong><span th:text="${selectedRound.reviewRoundName}"/></strong></option>
 								<option th:each="reiviewRound : ${reiviewRoundList}" th:value="${reiviewRound.reviewRoundId}" th:text="${reiviewRound.reviewRoundName}">
 							</select>
 						</div>
 					</form>
 					
-					<div class="card p-4">
-						Some Text
+					<div class="card p-4 mt-2">
+						<div class="p-4" th:object="${reviewAverages}">
+							
+							<div><strong>Quality of Work</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageQualityOfWorkRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<div class="mt-3"><strong>Punctuality</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averagePunctualityRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<div class="mt-3"><strong>Reliability</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageReliabilityRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<div class="mt-3"><strong>Communication Skill</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageCommunicationSkillRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<div class="mt-3"><strong>Decision Making</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageDecisionMakingRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<div class="mt-3"><strong>Initiative</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageInitiativeRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<div class="mt-3"><strong>Teamwork</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageTeamworkRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<div class="mt-3"><strong>Knowledge</strong></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageKnowledgeRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							
+							<div th:if="${showCommentList}">
+								<div class="mt-3"><strong>Comments</strong></div>
+								<div class="overflow-auto text-center"  style="height:5em"> 
+									<p class="my-2" th:each="comment : ${reviewAverages.commentList}" th:text="${comment}" />
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 		

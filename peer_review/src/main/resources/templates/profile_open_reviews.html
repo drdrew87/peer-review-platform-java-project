@@ -55,6 +55,49 @@
 		</div>
 	</div>
 
+	<div class="contiainer d-flex justify-content-center">
+		
+		<div th:if="${emptyList}" class="col-10"> 
+			<div class="row">
+				<div class="container col-8">	
+				<div class="card p-4">
+					No Open Review Available.
+				</div>
+				</div>
+			</div>
+		</div>
+		<div th:unless="${emptyList}" class="col-10"> 
+			<div class="row">
+				<div class="container col-6">
+					<div class="card p-4">
+						<p th:text="${listIndex}"/>
+					</div>
+				</div>
+				
+				<div class="container col-6">
+					<form class="d-grid" th:object="${reiviewRoundList}" th:action="@{/profile/{username}/OpenReviews(username=${username})}" method="post">
+						<div class="form-group">
+							<select onchange="this.form.submit()" class="form-control" id="selectedRoundId" name ="selectedRoundId">
+								<option selected th:object="${selectedRound}" disabled value=""><strong><span th:text="${selectedRound.reviewRoundName}"/></strong></option>
+								<option th:each="reiviewRound : ${reiviewRoundList}" th:value="${reiviewRound.reviewRoundId}" th:text="${reiviewRound.reviewRoundName}">
+							</select>
+						</div>
+					</form>
+						
+					<div class="card p-4">
+						<form th:action="@{/profile/{username}/OpenReviews/review(username=${username})}" th:object="${openReviewList}" method="post">
+							<div th:each="object : ${openReviewList}">
+								<button type="submit" th:value="${object.index}" id="listIndex" name="listIndex"><span th:text="${object.recipient.firstName} + ' ' + ${object.recipient.lastName}" /></button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		
+		</div>
+		
+	</div>
+
 	<div class="container d-flex justify-content-end force-to-bottom">
 		<p>Date: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"></span></p>
 	</div>

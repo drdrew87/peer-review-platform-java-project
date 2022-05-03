@@ -1,5 +1,6 @@
 package com.fdm.peer_review.repo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,13 @@ public interface ReviewRepo extends JpaRepository<Review, ReviewPK>{
     
     Optional<List<Review>> findByReviewRoundIdAndRecipientIdAndCompletionDateIsNotNull(int reviewRoundId, int recipientId);
     
+    List<Review> getByReviewRoundIdAndRecipientIdAndCompletionDateIsNull(int reviewRoundId, int recipientId);
+    
+    Optional<List<Review>> findByReviewRoundIdAndRecipientIdAndCompletionDateIsNull(int reviewRoundId, int recipientId);
+    
+    List<Review> getByReviewRoundIdAndReviewerIdAndCompletionDateIsNull(int reviewRoundId, int employeeId);
+    
+    Optional<List<Review>> findByReviewRoundIdAndReviewerIdAndCompletionDateIsNull(int reviewRoundId, int employeeId);
     
     List<Review> getByReviewRoundIdAndReviewerId(int reviewRoundId, int reviewerId);
     
@@ -48,5 +56,7 @@ public interface ReviewRepo extends JpaRepository<Review, ReviewPK>{
     List<Review> getByCompletionDateIsNotNullAndReviewRoundIdIn(Collection<Integer> reviewRoundList);
     
     Optional<List<Review>> findByCompletionDateIsNotNullAndReviewRoundIdIn(Collection<Integer> reviewRoundList);
+    
+    
 
 }

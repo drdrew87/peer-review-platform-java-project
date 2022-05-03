@@ -54,6 +54,55 @@
         </div>
 		</div>
 	</div>
+	
+	<div class="container text-center my-5">
+		<div class="container my-auto">
+			<h2>Create Review Round</h2>
+
+			<form th:action="@{/profile/{username}/CreateReviewRound(username=${username})}" method="post">
+				<div class="row justify-content-center">	
+					<div class="col-6">
+						<div th:if="${roundCreatedSuccessful}"  class="alert alert-success" role="alert">
+							<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+							<strong>Review round created successfully!</strong>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-6">
+						<div class="form-floating mt-3 mb-3">
+							<input type="text" class="form-control" id="reviewRoundName" placeholder="Review Round Name" name="reviewRoundName" required/>
+							<label for="reviewRoundName">Review Round Name</label>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-6">
+						<div class="form-floating mt-3 mb-3">
+							<input type="date" class="form-control datepicker" id="completionDeadline"  name="completionDeadline" required/>
+							<label for="completionDeadline">Completion Deadline</label>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-6 d-grid mt-3">
+						<select id="department" name="department" class="form-select" aria-label="Choose a department" required>
+							<option selected disabled value="">Choose a department</option>
+							<option th:each="department : ${departments}" th:value="${department.deparmentId}" th:text="${department.departmentName}">
+						</select>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-6">
+						<div class="d-grid mb-2 mt-4">
+							<button type="submit" class="btn btn-outline-primary">Create Review Round</button>
+						</div>
+					</div>
+				</div>
+			</form>
+	
+		</div>
+	</div>
 
 	<div class="container d-flex justify-content-end force-to-bottom">
 		<p>Date: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"></span></p>

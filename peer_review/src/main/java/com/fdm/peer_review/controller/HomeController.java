@@ -2,14 +2,6 @@ package com.fdm.peer_review.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.fdm.peer_review.model.Employee;
-import com.fdm.peer_review.repo.DepartmentRepo;
-import com.fdm.peer_review.repo.EmployeeRepo;
-import com.fdm.peer_review.repo.PermissionRepo;
-import com.fdm.peer_review.service.DataBasePopulator;
-import com.fdm.peer_review.service.LoginValidator;
-import com.fdm.peer_review.service.RegistrationValidator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fdm.peer_review.model.Employee;
+import com.fdm.peer_review.repo.DepartmentRepo;
+import com.fdm.peer_review.repo.EmployeeRepo;
+import com.fdm.peer_review.repo.PermissionRepo;
+import com.fdm.peer_review.service.LoginValidator;
+import com.fdm.peer_review.service.RegistrationValidator;
 
 
 @Controller
@@ -30,22 +29,10 @@ public class HomeController {
     @Autowired
     private RegistrationValidator registrationValidator;
     @Autowired
-    private DataBasePopulator dataBasePopulator;
-    @Autowired
     private LoginValidator loginValidator;
     
     @GetMapping("/")
     public String goToLandingPage(Model model) {
-	if(permissionRepo.count()<1) {
-	    dataBasePopulator.populatePermission();
-	}
-	if(departmentRepo.count()<1) {
-	    dataBasePopulator.populateDepartments();
-	}
-	if (employeeRepo.count()<1) {
-	    dataBasePopulator.addTestAccount();
-	}
-	
 	return "index";
     }
 

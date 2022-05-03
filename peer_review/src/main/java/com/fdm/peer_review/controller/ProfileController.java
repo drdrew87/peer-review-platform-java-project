@@ -1,5 +1,6 @@
 package com.fdm.peer_review.controller;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.fdm.peer_review.model.Department;
 import com.fdm.peer_review.model.Employee;
 import com.fdm.peer_review.model.Review;
 import com.fdm.peer_review.model.ReviewRound;
@@ -24,6 +26,7 @@ import com.fdm.peer_review.repo.DepartmentRepo;
 import com.fdm.peer_review.repo.EmployeeRepo;
 import com.fdm.peer_review.repo.ReviewRepo;
 import com.fdm.peer_review.repo.ReviewRoundRepo;
+import com.fdm.peer_review.service.ReviewRoundCreationService;
 import com.fdm.peer_review.view.ProfileView;
 
 @Controller
@@ -36,6 +39,8 @@ public class ProfileController {
     private ReviewRepo reviewRepo;
     @Autowired
     private DepartmentRepo departmentRepo;
+    @Autowired
+    private ReviewRoundCreationService roundCreator;
     
     @GetMapping("/profile")
     public String DirectAccessToProfilePage() {
@@ -135,8 +140,32 @@ public class ProfileController {
 	    if((boolean) session.getAttribute("allTabs")) {
 		model.addAttribute("allTabs",true);
 	    }
+	    Employee currentUser = employeeRepo.getByUserName(username);
+	    ArrayList<Department> departmentList = new ArrayList<Department>();
 	    
-	    model.addAttribute("departments", departmentRepo.findAll());
+	    if (currentUser.getDepartment().getDepartmentName().equals("Trainer")) {
+		departmentList.add(departmentRepo.getByDepartmentName("Trainee"));
+	    }
+	    
+	    if (currentUser.getPermission().isDepartmentManager()) {
+		departmentList.add(currentUser.getDepartment());
+	    }
+	    
+	    if (currentUser.getPermission().isDepartmentManager() && currentUser.getPermission().isHR()) {
+		departmentList = (ArrayList<Department>) departmentRepo.findAll();
+	    } else if (currentUser.getPermission().isHR()) {
+		ArrayList<Department> allDepartments = (ArrayList<Department>) departmentRepo.findAll();
+		for (Department department : allDepartments) {
+		    if (!department.getDepartmentName().equals("HR")) {
+			departmentList.add(department);
+		    }
+		}
+	    }
+	    
+	    
+	    
+	    
+	    model.addAttribute("departments", departmentList);
 	    
 	    return "profile_create_review_round";
 	} else {
@@ -146,10 +175,17 @@ public class ProfileController {
     
     
     @PostMapping("/profile/{username}/CreateReviewRound")
-    public String createANewReviewRound(@PathVariable String username, @RequestParam String reviewRoundName, @RequestParam String completionDeadline, @RequestParam String department) {
+    public String createANewReviewRound(@PathVariable String username, RedirectAttributes attributes, @RequestParam String reviewRoundName, @RequestParam String completionDeadline, @RequestParam String department) {
 	ReviewRound newReviewRound = new ReviewRound();
+	newReviewRound.setReviewRoundName(reviewRoundName);
+	newReviewRound.setCompletionDeadline(Date.valueOf(completionDeadline));
+	newReviewRound.setDepartment(departmentRepo.getById(Integer.valueOf(department)));
 	
-	return null;
+	roundCreator.createNewReviewRound(newReviewRound);
+	
+	attributes.addFlashAttribute("roundCreatedSuccessful", true);
+	
+	return "redirect:/profile/"+username+"/CreateReviewRound";
     }
     
    

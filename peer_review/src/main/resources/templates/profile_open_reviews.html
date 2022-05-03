@@ -18,7 +18,7 @@
 </head>
 <body>
 <div class="container-fluid vh-100">
-	<div class="container sticky-top">
+	<div class="container">
 		<nav class="navbar navbar-light">
 			<div class="d-flex justify-content-start">
 			<a class="navbar-brand fs-2" role="link" aria-disabled="true">Peer Review Platform</a>
@@ -70,7 +70,87 @@
 			<div class="row">
 				<div class="container col-6">
 					<div class="card p-4">
-						<p th:text="${listIndex}"/>
+						<p th:text="'Review Round: '+${selectedReview.reviewRoundId}"/>
+						<p th:text="'Review Recipient: '+ ${selectedRecipient.firstName} + ' ' + ${selectedRecipient.lastName}"/>
+						
+						<form th:object="${selectedReview}" th:action="@{/profile/{username}/OpenReviews/submit(username=${username})}" method="post">
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="reviewRoundId">Review Round ID</label>
+							<div class="col-4">
+							<input class="form-control" name="reviewRoundId" id ="reviewRoundId" type="number" th:value="*{reviewRoundId}" th:field="*{reviewRoundId}" readonly>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="reviewerId">Review Round ID</label>
+							<div class="col-4">
+							<input class="form-control" name="reviewerId" id ="reviewerId" type="number" th:value="*{reviewerId}" th:field="*{reviewerId}" readonly>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start mb-4">
+							<label class="col-6 col-form-label" for="recipientId">Review Round ID</label>
+							<div class="col-4">
+							<input class="form-control" name="recipientId" id ="recipientId" type="number" th:value="*{recipientId}" th:field="*{recipientId}" readonly>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field1">Quality Of Work</label>
+							<div class="col-4">
+							<input class="form-control" name="field1" id ="field1" type="number" min="1" max="5" th:field="*{qualityOfWorkRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field2">Punctuality</label>
+							<div class="col-4">
+							<input class="form-control" name="field2" id ="field2" type="number"  min="1" max="5"  th:field="*{punctualityRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field3">Reliability</label>
+							<div class="col-4">
+							<input class="form-control" name="field3" id ="field3" type="number"  min="1" max="5"  th:field="*{reliabilityRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field4">Communication Skill</label>
+							<div class="col-4">
+							<input class="form-control" name="field4" id ="field4" type="number" min="1" max="5" th:field="*{communicationSkillRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field5">Decision Making</label>
+							<div class="col-4">
+							<input class="form-control" name="field5" id ="field5" type="number"  min="1" max="5"  th:field="*{decisionMakingRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field6">Initiative</label>
+							<div class="col-4">
+							<input class="form-control" name="field6" id ="field6" type="number"  min="1" max="5"  th:field="*{initiativeRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field7">Teamwork</label>
+							<div class="col-4">
+							<input class="form-control" name="field7" id ="field7" type="number"  min="1" max="5"  th:field="*{teamworkRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start">
+							<label class="col-6 col-form-label" for="field8">Knowledge</label>
+							<div class="col-4">
+							<input class="form-control" name="field8" id ="field8" type="number"  min="1" max="5"  th:field="*{knowledgeRating}" required>
+							</div></div>
+							
+							<div class="form-group row d-flex justify-content-start mt-3">
+							<label class="col-4 col-form-label" for="comment">Comment</label>
+							<div class="col-8">
+							<input class="form-control"  name="comment" id ="comment" type="text"  th:field="*{comment}">
+							</div></div>
+							
+							<div class="d-flex justify-content-center mt-4">
+							<button type="submit" class="btn btn-outline-primary">Submit Review Now</button>
+							</div>
+						</form>
 					</div>
 				</div>
 				
@@ -84,10 +164,12 @@
 						</div>
 					</form>
 						
-					<div class="card p-4">
+					<div class="card p-4 mt-2">
 						<form th:action="@{/profile/{username}/OpenReviews/review(username=${username})}" th:object="${openReviewList}" method="post">
 							<div th:each="object : ${openReviewList}">
-								<button type="submit" th:value="${object.index}" id="listIndex" name="listIndex"><span th:text="${object.recipient.firstName} + ' ' + ${object.recipient.lastName}" /></button>
+								<div class="d-flex justify-content-center my-3">
+								<button class="col-6 btn btn-outline-primary" type="submit" th:value="${object.index}" id="listIndex" name="listIndex"><span th:text="${object.recipient.firstName} + ' ' + ${object.recipient.lastName}" /></button>
+								</div>
 							</div>
 						</form>
 					</div>

@@ -1,6 +1,7 @@
 package com.fdm.peer_review.controller;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -179,6 +180,11 @@ public class ProfileController {
 		    listIndex = openReviewMapByRoundId.get(selectedRoundId).get(0).getIndex();
 		    model.addAttribute("listIndex",listIndex);
 		}
+		
+		Review selectedReview = openReviewMapByRoundId.get(selectedRoundId).get(listIndex).getReview();
+		model.addAttribute("selectedReview", selectedReview);
+		Employee selectedRecipient = openReviewMapByRoundId.get(selectedRoundId).get(listIndex).getRecipient();
+		model.addAttribute("selectedRecipient", selectedRecipient);
 	    }
 	    
 	    
@@ -197,6 +203,13 @@ public class ProfileController {
     @PostMapping("/profile/{username}/OpenReviews/review")
     public String selectReviewInOpenRound(@PathVariable String username, RedirectAttributes attributes, @RequestParam String listIndex) {
 	attributes.addFlashAttribute("listIndex", Integer.valueOf(listIndex));
+	return "redirect:/profile/"+username+"/OpenReviews";
+    }
+    
+    @PostMapping("/profile/{username}/OpenReviews/submit")
+    public String submitReviewForm(@PathVariable String username, RedirectAttributes attributes, Review submittingReview) {
+	submittingReview.setCompletionDate(Date.valueOf(LocalDate.now()));
+	reviewRepo.save(submittingReview);
 	return "redirect:/profile/"+username+"/OpenReviews";
     }
     

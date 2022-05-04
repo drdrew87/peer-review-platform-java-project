@@ -54,7 +54,7 @@ public class DataLoader implements ApplicationRunner {
 	permissionRepo.save(HRManager);
 	
 	
-	Employee test = new Employee("Superuser","Super", "test", "test", "M", departmentRepo.getById(3), permissionRepo.getById(4));
+	Employee test = new Employee("Superuser","Super", "test", "test", "M", departmentRepo.getById(4), permissionRepo.getById(4));
 	emRepo.save(test);
 	
 	Employee trainee1 = new Employee("Trainee1","FDM", "trainee1", "trainee", "F", departmentRepo.getById(1), permissionRepo.getById(1));

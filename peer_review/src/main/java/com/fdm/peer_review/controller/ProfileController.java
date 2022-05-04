@@ -212,17 +212,83 @@ public class ProfileController {
     @GetMapping("/profile/{username}/TeamReviews")
     public String goToTeamReviews(@PathVariable String username, HttpServletRequest request, Model model) {
 	HttpSession session = request.getSession();
+	Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+	
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
 	    if((boolean) session.getAttribute("allTabs")) {
 		model.addAttribute("allTabs",true);
 	    }
 	    
+	    Employee currentUser = employeeService.getByUsername(username);
+	    
+	    @SuppressWarnings("unchecked")
+	    ArrayList<Department> departmentList = (ArrayList<Department>) session.getAttribute("departmentList");
+	    model.addAttribute("departments", departmentList);
+
+	    
+	    Integer departmentId = 0;
+	    if (inputFlashMap != null && inputFlashMap.get("departmentId")!=null) {
+		departmentId = (Integer) inputFlashMap.get("departmentId");
+		model.addAttribute("selectedDept", deptService.getById(departmentId));
+	    } else {
+		departmentId = departmentList.get(0).getDeparmentId();
+		model.addAttribute("selectedDept",departmentList.get(0));
+		model.addAttribute("departmentId",departmentId);   
+	    }
+	    
+	    HashMap<Integer, ArrayList<HashMap<Integer, ArrayList<Review>>>> closedReviewMapByRoundId = new HashMap<Integer, ArrayList<HashMap<Integer,ArrayList<Review>>>>();
+	    Department selectedDept = deptService.getById(departmentId);
+	    ArrayList<ReviewRound> closedRoundListInDept = (ArrayList<ReviewRound>) reviewRoundService.getClosedRoundsByDepartment(selectedDept);
+	    ArrayList<Employee> employeesInDept = (ArrayList<Employee>) employeeService.getByDepartment(selectedDept);
+//	    for (ReviewRound round : closedRoundListInDept) {
+//		ArrayList<HashMap<Integer,ArrayList<Review>>> listOfRecipientAndReviewsInRound = new ArrayList<HashMap<Integer, ArrayList<Review>>>();
+//		for (Employee recipient : employeesInDept) {
+//		    ArrayList<Review> completedReviews = (ArrayList<Review>) reviewService.getClosedRoundCompletedReviews(round.getReviewRoundId(), recipient.getEmployeeId());
+//		    if (completedReviews.size()>0) {
+//			HashMap<Integer,ArrayList<Review>> recipientReviewMap = new HashMap<Integer, ArrayList<Review>>();
+//			recipientReviewMap.put(recipient.getEmployeeId(), completedReviews);
+//			listOfRecipientAndReviewsInRound.add(recipientReviewMap);
+//		    }
+//		}
+//		closedReviewMapByRoundId.put(round.getReviewRoundId(),listOfRecipientAndReviewsInRound);
+//	    }
+	    
+	    model.addAttribute("reiviewRoundList", closedRoundListInDept);
+	    
+	    Integer selectedRoundId = 0;
+	    if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
+		selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
+		model.addAttribute("selectedRound", reviewRoundService.getById(selectedRoundId));
+		model.addAttribute("departmentId",departmentId); 
+	    } else {
+		selectedRoundId = closedRoundListInDept.get(0).getReviewRoundId();
+		model.addAttribute("selectedRound",closedRoundListInDept.get(0));
+		model.addAttribute("selectedRoundId",selectedRoundId);
+		model.addAttribute("departmentId",departmentId); 
+	    }
 	    
 	    return "profile_team_reviews";
 	} else {
 	    return "index";
 	}
     }
+    
+    @PostMapping("/profile/{username}/TeamReviews/departmentList")
+    public String selectDepartmentOnTeamReviews(@PathVariable String username, RedirectAttributes attributes, @RequestParam String departmentId) {
+	attributes.addFlashAttribute("departmentId", Integer.valueOf(departmentId));
+	return "redirect:/profile/"+username+"/TeamReviews";
+    }
+    
+    @PostMapping("/profile/{username}/TeamReviews/ReviewRounds")
+    public String selectReviewRoundInTeamReviews(@PathVariable String username, @RequestParam String deptAndRound, RedirectAttributes attributes) {
+//	attributes.addFlashAttribute("selectedRoundId", Integer.valueOf(selectedRoundId));
+	int departmentId = Integer.valueOf(deptAndRound.split(",")[0]);
+	int selectedRoundId = Integer.valueOf(deptAndRound.split(",")[1]);
+	attributes.addFlashAttribute("departmentId", departmentId);
+	attributes.addFlashAttribute("selectedRoundId", selectedRoundId);
+	return "redirect:/profile/"+username+"/TeamReviews";
+    }
+    
     
     
     @GetMapping("/profile/{username}/CreateReviewRound")
@@ -235,7 +301,6 @@ public class ProfileController {
 
 	    @SuppressWarnings("unchecked")
 	    ArrayList<Department> departmentList = (ArrayList<Department>) session.getAttribute("departmentList");
-
 	    model.addAttribute("departments", departmentList);
 	    
 	    return "profile_create_review_round";

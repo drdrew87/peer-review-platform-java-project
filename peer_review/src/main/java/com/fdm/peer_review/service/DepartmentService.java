@@ -17,17 +17,16 @@ public class DepartmentService {
     
     public List<Department> generateDepartmentList(Employee currentUser) {
 	ArrayList<Department> departmentList = new ArrayList<Department>();
-	if (currentUser.getDepartment().getDepartmentName().equals("Trainer")) {
-		departmentList.add(departmentRepo.getByDepartmentName("Trainee"));
-	}
 	    
 	if (currentUser.getPermission().isDepartmentManager()) {
 		departmentList.add(currentUser.getDepartment());
 	}
+
+	if (currentUser.getDepartment().getDepartmentName().equals("Trainer")) {
+	    departmentList.add(departmentRepo.getByDepartmentName("Trainee"));
+	}
 	
-	if (currentUser.getPermission().isDepartmentManager() && currentUser.getPermission().isHR()) {
-	    departmentList = (ArrayList<Department>) departmentRepo.findAll();
-	} else if (currentUser.getPermission().isHR()) {
+	if (currentUser.getPermission().isHR()) {
 	    ArrayList<Department> allDepartments = (ArrayList<Department>) departmentRepo.findAll();
 	    for (Department department : allDepartments) {
 		if (!department.getDepartmentName().equals("HR")) {

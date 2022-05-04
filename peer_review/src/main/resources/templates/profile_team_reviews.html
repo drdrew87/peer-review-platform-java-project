@@ -54,6 +54,36 @@
         </div>
 		</div>
 	</div>
+	
+	<div class="container d-flex justify-content-center">
+		<div class="row col-10 justify-content-between">
+				<div class="col-4 d-flex">
+					<form th:action="@{/profile/{username}/TeamReviews/departmentList(username=${username})}" class="col-12" method="post">
+						<select onchange="this.form.submit()" class="form-select" id="departmentId" name ="departmentId">
+							<option selected disabled value=""><span th:text="${selectedDept.departmentName}"></option>
+							<option th:each="department : ${departments}" th:value="${department.deparmentId}" th:text="${department.departmentName}">
+						</select>
+					</form>
+				</div>
+				
+				<div class="col-6 d-flex">
+					<form th:action="@{/profile/{username}/TeamReviews/ReviewRounds(username=${username})}" class="col-12"  method="post">
+						<select onchange="this.form.submit()" class="form-select" id="deptAndRound" name ="deptAndRound">
+							<option selected disabled value=""><span th:text="${selectedRound.reviewRoundName}"></option>
+							<option th:each="reviewRound : ${reiviewRoundList}" th:value="${departmentId} + ',' + ${reviewRound.reviewRoundId}" th:text="${reviewRound.reviewRoundName}">
+						</select>
+					</form>
+				</div>
+		</div>
+	</div>
+	
+	<div class="container d-flex justify-content-center mt-4">
+		<div class="card col-12">
+			Some words 
+			<span th:text="${departmentId}"></span>
+			<span th:text="${selectedRoundId}"></span>
+		</div>
+	</div>
 
 	<div class="container d-flex justify-content-end force-to-bottom">
 		<p>Date: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"></span></p>

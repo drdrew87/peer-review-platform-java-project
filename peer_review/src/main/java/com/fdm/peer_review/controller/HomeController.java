@@ -11,21 +11,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fdm.peer_review.model.Employee;
-import com.fdm.peer_review.repo.DepartmentRepo;
-import com.fdm.peer_review.repo.EmployeeRepo;
-import com.fdm.peer_review.repo.PermissionRepo;
+import com.fdm.peer_review.service.DepartmentService;
+import com.fdm.peer_review.service.EmployeeService;
 import com.fdm.peer_review.service.LoginValidator;
+import com.fdm.peer_review.service.PermissionService;
 import com.fdm.peer_review.service.RegistrationValidator;
 
 
 @Controller
 public class HomeController {
+
     @Autowired
-    private DepartmentRepo departmentRepo;
+    private DepartmentService deptService;
     @Autowired
-    private PermissionRepo permissionRepo;
+    private PermissionService permService;
     @Autowired
-    private EmployeeRepo employeeRepo;
+    private EmployeeService empService;
     @Autowired
     private RegistrationValidator registrationValidator;
     @Autowired
@@ -53,8 +54,8 @@ public class HomeController {
     @GetMapping("/register")
     public String goToRegisterPage(Model model) {
         model.addAttribute("employee", new Employee());
-        model.addAttribute("departments", departmentRepo.findAll());
-        model.addAttribute("permissions", permissionRepo.findAll());
+        model.addAttribute("departments", deptService.findAll());
+        model.addAttribute("permissions", permService.findAll());
         return "register";
     }
 
@@ -65,9 +66,9 @@ public class HomeController {
             return "redirect:/register";
         }
 	if (registrationValidator.validate(employee)) {
-            employee.setDepartment(departmentRepo.getById(Integer.valueOf(department)));
-            employee.setPermission(permissionRepo.getById(Integer.valueOf(permission)));
-            employeeRepo.save(employee);
+            employee.setDepartment(deptService.getById(Integer.valueOf(department)));
+            employee.setPermission(permService.getById(Integer.valueOf(permission)));
+            empService.save(employee);
             attributes.addFlashAttribute("registerSuccessful", true);
             return "redirect:/";
         } else {

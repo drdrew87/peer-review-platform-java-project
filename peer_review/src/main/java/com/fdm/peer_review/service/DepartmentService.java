@@ -11,7 +11,7 @@ import com.fdm.peer_review.model.Employee;
 import com.fdm.peer_review.repo.DepartmentRepo;
 
 @Service
-public class DepartmentListService {
+public class DepartmentService {
     @Autowired
     private DepartmentRepo departmentRepo;
     
@@ -36,5 +36,13 @@ public class DepartmentListService {
 	    }
 	}
 	return departmentList;
+    }
+    
+    public Department getById(int departmentId) {
+	return departmentRepo.getById(departmentId);
+    }
+    
+    public List<Department> findAll() {
+	return departmentRepo.findAll();
     }
 }

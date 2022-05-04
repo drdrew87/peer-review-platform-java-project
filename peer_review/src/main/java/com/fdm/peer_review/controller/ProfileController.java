@@ -24,12 +24,10 @@ import com.fdm.peer_review.model.Department;
 import com.fdm.peer_review.model.Employee;
 import com.fdm.peer_review.model.Review;
 import com.fdm.peer_review.model.ReviewRound;
-import com.fdm.peer_review.repo.DepartmentRepo;
-import com.fdm.peer_review.repo.EmployeeRepo;
-import com.fdm.peer_review.repo.ReviewRepo;
-import com.fdm.peer_review.repo.ReviewRoundRepo;
-import com.fdm.peer_review.service.DepartmentListService;
-import com.fdm.peer_review.service.ReviewRoundCreationService;
+import com.fdm.peer_review.service.DepartmentService;
+import com.fdm.peer_review.service.EmployeeService;
+import com.fdm.peer_review.service.ReviewRoundService;
+import com.fdm.peer_review.service.ReviewService;
 import com.fdm.peer_review.view.OpenRoundReviewView;
 import com.fdm.peer_review.view.ProfileView;
 import com.fdm.peer_review.view.ReviewAveragesView;
@@ -37,17 +35,14 @@ import com.fdm.peer_review.view.ReviewAveragesView;
 @Controller
 public class ProfileController {
     @Autowired
-    private EmployeeRepo employeeRepo;
+    private EmployeeService employeeService;
     @Autowired
-    private ReviewRoundRepo reviewRoundRepo;
+    private ReviewRoundService reviewRoundService;
+
     @Autowired
-    private ReviewRepo reviewRepo;
+    private ReviewService reviewService;
     @Autowired
-    private DepartmentRepo departmentRepo;
-    @Autowired
-    private ReviewRoundCreationService roundCreator;
-    @Autowired
-    private DepartmentListService deptListService;
+    private DepartmentService deptService;
     
     @GetMapping("/profile")
     public String DirectAccessToProfilePage() {
@@ -61,7 +56,7 @@ public class ProfileController {
 	
 	
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
-	    Employee currentUser = employeeRepo.getByUserName(username);
+	    Employee currentUser = employeeService.getByUsername(username);
 	    if (currentUser.getPermission().isDepartmentManager() || currentUser.getPermission().isHR()) {
 		session.setAttribute("allTabs", true);
 		model.addAttribute("allTabs",true);
@@ -74,7 +69,7 @@ public class ProfileController {
 		}
 	    }
 	    
-	    ArrayList<Department> departmentList = (ArrayList<Department>) deptListService.generateDepartmentList(currentUser);
+	    ArrayList<Department> departmentList = (ArrayList<Department>) deptService.generateDepartmentList(currentUser);
 	    session.setAttribute("departmentList", departmentList);
 	    
 	    
@@ -83,9 +78,9 @@ public class ProfileController {
 	    
 	    ArrayList<ReviewRound> closedReiviewRoundList = new ArrayList<ReviewRound>();
 	    HashMap<Integer, ArrayList<Review>> closedReviewMapByRoundId = new HashMap<Integer, ArrayList<Review>>();
-	    ArrayList<ReviewRound> reiviewRoundListInDept = (ArrayList<ReviewRound>) reviewRoundRepo.getClosedRoundsByDepartment(currentUser.getDepartment());
+	    ArrayList<ReviewRound> reiviewRoundListInDept = (ArrayList<ReviewRound>) reviewRoundService.getClosedRoundsByDepartment(currentUser.getDepartment());
 	    for (ReviewRound reviewRound : reiviewRoundListInDept) {
-		ArrayList<Review> reviewsList = (ArrayList<Review>) reviewRepo.getByReviewRoundIdAndRecipientIdAndCompletionDateIsNotNull(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
+		ArrayList<Review> reviewsList = (ArrayList<Review>) reviewService.getClosedRoundCompletedReviews(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
 		if (!(reviewsList.size() < 1)) {
 		    closedReiviewRoundList.add(reviewRound);
 		    closedReviewMapByRoundId.put(reviewRound.getReviewRoundId(),reviewsList);
@@ -101,7 +96,7 @@ public class ProfileController {
 		Integer selectedRoundId = 0;
 		if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
 		    selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
-		    model.addAttribute("selectedRound", reviewRoundRepo.getById(selectedRoundId));
+		    model.addAttribute("selectedRound", reviewRoundService.getById(selectedRoundId));
 		} else {
 		    selectedRoundId = closedReiviewRoundList.get(0).getReviewRoundId();
 		    model.addAttribute("selectedRound",closedReiviewRoundList.get(0));
@@ -122,7 +117,7 @@ public class ProfileController {
     }
     
     
-    @PostMapping("/profile/{username}/MyRatings")
+    @PostMapping("/profile/{username}/MyRatings/ReviewRounds")
     public String selectReviewRoundToViewRating(@PathVariable String username, @RequestParam String selectedRoundId, RedirectAttributes attributes) {
 	attributes.addFlashAttribute("selectedRoundId", Integer.valueOf(selectedRoundId));
 	return "redirect:/profile/"+username+"/MyRatings";
@@ -139,19 +134,19 @@ public class ProfileController {
 		model.addAttribute("allTabs",true);
 	    }
 	    
-	    Employee currentUser = employeeRepo.getByUserName(username);
+	    Employee currentUser = employeeService.getByUsername(username);
 	    
 	    ArrayList<ReviewRound> openReiviewRoundList = new ArrayList<ReviewRound>();
 	    HashMap<Integer,List<OpenRoundReviewView>> openReviewMapByRoundId = new HashMap<Integer, List<OpenRoundReviewView>>();
-	    ArrayList<ReviewRound> reiviewRoundListInDept = (ArrayList<ReviewRound>) reviewRoundRepo.getOpenRoundsByDepartment(currentUser.getDepartment());
+	    ArrayList<ReviewRound> reiviewRoundListInDept = (ArrayList<ReviewRound>) reviewRoundService.getOpenRoundsByDepartment(currentUser.getDepartment());
 	    for (ReviewRound reviewRound : reiviewRoundListInDept) {
-		ArrayList<Review> reviewsList = (ArrayList<Review>) reviewRepo.getByReviewRoundIdAndReviewerIdAndCompletionDateIsNull(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
+		ArrayList<Review> reviewsList = (ArrayList<Review>) reviewService.getOpenRoundIncompleteReviews(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
 		if (!(reviewsList.size() < 1)) {
 		    openReiviewRoundList.add(reviewRound);
 		    ArrayList<OpenRoundReviewView> viewObjectList = new ArrayList<OpenRoundReviewView>();
 		    for (int index=0; index < reviewsList.size(); index++) {
 			viewObjectList.add(new OpenRoundReviewView(index, reviewRound, reviewsList.get(index), 
-				employeeRepo.getById(reviewsList.get(index).getReviewerId()), employeeRepo.getById(reviewsList.get(index).getRecipientId())));
+				employeeService.getById(reviewsList.get(index).getReviewerId()), employeeService.getById(reviewsList.get(index).getRecipientId())));
 		    }
 		    openReviewMapByRoundId.put(reviewRound.getReviewRoundId(),viewObjectList);
 		}
@@ -165,7 +160,7 @@ public class ProfileController {
 		Integer selectedRoundId = 0;
 		if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
 		    selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
-		    model.addAttribute("selectedRound", reviewRoundRepo.getById(selectedRoundId));
+		    model.addAttribute("selectedRound", reviewRoundService.getById(selectedRoundId));
 		} else {
 		    selectedRoundId = openReiviewRoundList.get(0).getReviewRoundId();
 		    model.addAttribute("selectedRound",openReiviewRoundList.get(0));
@@ -194,7 +189,7 @@ public class ProfileController {
 	}
     }
     
-    @PostMapping("/profile/{username}/OpenReviews")
+    @PostMapping("/profile/{username}/OpenReviews/ReviewRounds")
     public String selectReviewRoundInOpenViews(@PathVariable String username, @RequestParam String selectedRoundId, RedirectAttributes attributes) {
 	attributes.addFlashAttribute("selectedRoundId", Integer.valueOf(selectedRoundId));
 	return "redirect:/profile/"+username+"/OpenReviews";
@@ -209,7 +204,7 @@ public class ProfileController {
     @PostMapping("/profile/{username}/OpenReviews/submit")
     public String submitReviewForm(@PathVariable String username, RedirectAttributes attributes, Review submittingReview) {
 	submittingReview.setCompletionDate(Date.valueOf(LocalDate.now()));
-	reviewRepo.save(submittingReview);
+	reviewService.save(submittingReview);
 	return "redirect:/profile/"+username+"/OpenReviews";
     }
     
@@ -240,12 +235,7 @@ public class ProfileController {
 
 	    @SuppressWarnings("unchecked")
 	    ArrayList<Department> departmentList = (ArrayList<Department>) session.getAttribute("departmentList");
-	    
-	   
-	    
-	    
-	    
-	    
+
 	    model.addAttribute("departments", departmentList);
 	    
 	    return "profile_create_review_round";
@@ -260,9 +250,9 @@ public class ProfileController {
 	ReviewRound newReviewRound = new ReviewRound();
 	newReviewRound.setReviewRoundName(reviewRoundName);
 	newReviewRound.setCompletionDeadline(Date.valueOf(completionDeadline));
-	newReviewRound.setDepartment(departmentRepo.getById(Integer.valueOf(department)));
+	newReviewRound.setDepartment(deptService.getById(Integer.valueOf(department)));
 	
-	roundCreator.createNewReviewRound(newReviewRound);
+	reviewRoundService.createNewReviewRound(newReviewRound);
 	
 	attributes.addFlashAttribute("roundCreatedSuccessful", true);
 	

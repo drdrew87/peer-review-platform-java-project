@@ -83,9 +83,9 @@
 					</div>
 				</div>
 				<div th:unless="${emptyList}"> 
-					<form class="d-grid" th:object="${reiviewRoundList}" th:action="@{/profile/{username}/MyRatings(username=${username})}" method="post">
+					<form class="d-grid" th:object="${reiviewRoundList}" th:action="@{/profile/{username}/MyRatings/ReviewRounds(username=${username})}" method="post">
 						<div class="form-group">
-							<select onchange="this.form.submit()" class="form-control" id="selectedRoundId" name ="selectedRoundId">
+							<select onchange="this.form.submit()" class="form-select" id="selectedRoundId" name ="selectedRoundId">
 								<option selected th:object="${selectedRound}" disabled value=""><strong><span th:text="${selectedRound.reviewRoundName}"/></strong></option>
 								<option th:each="reiviewRound : ${reiviewRoundList}" th:value="${reiviewRound.reviewRoundId}" th:text="${reiviewRound.reviewRoundName}">
 							</select>

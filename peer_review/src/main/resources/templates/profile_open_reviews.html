@@ -62,14 +62,14 @@
 
 			<div th:if="${updateMode}">
 					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
-						<button class="col-1 btn btn-secondary mx-3" disabled>Update</button>
-						<button type="submit" name="updateMode" id="updateMode" class="col-1 btn btn-outline-primary" th:value="false">New</button>
+						<button class="col-1 btn btn-outline-secondary mx-3" disabled>Update</button>
+						<button type="submit" name="updateMode" id="updateMode" class="col-1 btn btn-primary" th:value="false">New</button>
 					</form>
 					</div>
 					<div th:unless="${updateMode}">
 					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
-						<button type="submit" name="updateMode" id="updateMode" class="col-1 btn btn-outline-primary mx-3" th:value="true">Update</button>
-						<button class="col-1 btn btn-secondary" disabled>New</button>
+						<button type="submit" name="updateMode" id="updateMode" class="col-1 btn btn-primary mx-3" th:value="true">Update</button>
+						<button class="col-1 btn btn-outline-secondary" disabled>New</button>
 					</form>
 					</div>
 			</div>
@@ -90,7 +90,7 @@
 					<table class="col-12 text-center table table-dark table-hover mb-0">
 						<tr>
 							<td class="col-4">Review Round</td>
-							<td class="col-8" th:text="${selectedReview.reviewRoundId}"></td>
+							<td class="col-8" th:text="${selectedRound.reviewRoundName}"></td>
 						</tr>
 						<tr>
 							<td class="col-4">Review Recipient</td>
@@ -108,13 +108,13 @@
 							</div></div>
 							
 							<div class="form-group row d-flex justify-content-start">
-							<label class="col-6 col-form-label" for="reviewerId">Review Round ID</label>
+							<label class="col-6 col-form-label" for="reviewerId">Reviewer ID</label>
 							<div class="col-4">
 							<input class="form-control" name="reviewerId" id ="reviewerId" type="number" th:value="*{reviewerId}" th:field="*{reviewerId}" readonly>
 							</div></div>
 							
 							<div class="form-group row d-flex justify-content-start mb-4">
-							<label class="col-6 col-form-label" for="recipientId">Review Round ID</label>
+							<label class="col-6 col-form-label" for="recipientId">Recipient ID</label>
 							<div class="col-4">
 							<input class="form-control" name="recipientId" id ="recipientId" type="number" th:value="*{recipientId}" th:field="*{recipientId}" readonly>
 							</div></div>
@@ -183,14 +183,14 @@
 				<div class="container col-6">
 					<div th:if="${updateMode}">
 					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
-						<button class="col-2 btn btn-secondary mx-3" disabled>Update</button>
-						<button type="submit" name="updateMode" id="updateMode" class="col-2 btn btn-outline-primary" th:value="false">New</button>
+						<button class="col-2 btn btn-outline-secondary mx-3" disabled>Update</button>
+						<button type="submit" name="updateMode" id="updateMode" class="col-2 btn btn-primary" th:value="false">New</button>
 					</form>
 					</div>
 					<div th:unless="${updateMode}">
 					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
-						<button type="submit" name="updateMode" id="updateMode" class="col-2 btn btn-outline-primary mx-3" th:value="true">Update</button>
-						<button class="col-2 btn btn-secondary" disabled>New</button>
+						<button type="submit" name="updateMode" id="updateMode" class="col-2 btn btn-primary mx-3" th:value="true">Update</button>
+						<button class="col-2 btn btn-outline-secondary" disabled>New</button>
 					</form>
 					</div>
 					
@@ -220,9 +220,9 @@
 		
 	</div>
 
-	<div class="container d-flex justify-content-end force-to-bottom">
+	<div class="container d-flex justify-content-end my-5 mx-5">
 		<p>Date: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"></span></p>
-	</div>
+	</div>>
 </div>
 
 

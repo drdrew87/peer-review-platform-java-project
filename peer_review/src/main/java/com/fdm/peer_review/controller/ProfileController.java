@@ -53,21 +53,27 @@ public class ProfileController {
     public String LogInToProfilePage(@PathVariable String username, HttpServletRequest request, Model model) {
 	HttpSession session = request.getSession();
 	Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-	session.setAttribute("updateMode",false);
+	if (session.getAttribute("updateMode")==null) {
+	    session.setAttribute("updateMode",false);
+	}
 	
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
 	    Employee currentUser = employeeService.getByUsername(username);
-	    if (currentUser.getPermission().isDepartmentManager() || currentUser.getPermission().isHR()) {
-		session.setAttribute("allTabs", true);
-		model.addAttribute("allTabs",true);
-	    } else {
-		if (currentUser.getDepartment().getDepartmentName().equals("Trainer")) {
-		    session.setAttribute("allTabs", true);
-		    model.addAttribute("allTabs",true);
-		} else {
-		    session.setAttribute("allTabs", false);
-		}
-	    }
+    	    if (session.getAttribute("allTabs")!=null) {
+    		model.addAttribute("allTabs",(boolean) session.getAttribute("allTabs"));
+    	    } else {
+    		if (currentUser.getPermission().isDepartmentManager() || currentUser.getPermission().isHR()) {
+    		    session.setAttribute("allTabs", true);
+    		    model.addAttribute("allTabs",true);
+    		} else {
+    		    if (currentUser.getDepartment().getDepartmentName().equals("Trainer")) {
+    			session.setAttribute("allTabs", true);
+    			model.addAttribute("allTabs",true);
+    		    } else {
+    			session.setAttribute("allTabs", false);
+    		    }
+    		}
+    	    }
 	    
 	    deptService.generateDepartmentList(session, currentUser);
 

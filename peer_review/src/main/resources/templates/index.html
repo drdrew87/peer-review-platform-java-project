@@ -28,7 +28,7 @@
 
 			<div class="d-flex justify-content-end">
 			<form class="form-inline" th:action="@{/}" method="get">	
-				<button class="btn btn-outline-dark me-3" type="submit">Login</button>
+				<button class="btn btn-outline-dark me-3" type="submit" disabled>Login</button>
 			</form>
 			<form class="form-inline" th:action="@{register}" method="get">	
 				<button class="btn btn-primary" type="submit">Register</button>
@@ -68,7 +68,7 @@
 		</div>
 	</div>
 
-	<div class="container d-flex justify-content-end force-to-bottom">
+	<div class="container d-flex justify-content-end my-5 mx-5">
 		<p>Date: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"></span></p>
 	</div>
 	

@@ -21,6 +21,10 @@ public class ReviewService {
     	return reviewRepo.getByReviewRoundIdAndReviewerIdAndCompletionDateIsNull(reviewRoundId, recipientId);
     }
     
+    public List<Review> getOpenRoundCompletedReviews(int reviewRoundId, int recipientId) {
+    	return reviewRepo.getByReviewRoundIdAndReviewerIdAndCompletionDateIsNotNull(reviewRoundId, recipientId);
+    }
+    
     public void save(Review review) {
 	reviewRepo.save(review);
     }

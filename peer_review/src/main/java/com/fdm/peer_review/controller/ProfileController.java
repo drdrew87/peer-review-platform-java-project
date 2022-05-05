@@ -53,7 +53,7 @@ public class ProfileController {
     public String LogInToProfilePage(@PathVariable String username, HttpServletRequest request, Model model) {
 	HttpSession session = request.getSession();
 	Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-	
+	session.setAttribute("updateMode",false);
 	
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
 	    Employee currentUser = employeeService.getByUsername(username);
@@ -69,10 +69,8 @@ public class ProfileController {
 		}
 	    }
 	    
-	    ArrayList<Department> departmentList = (ArrayList<Department>) deptService.generateDepartmentList(currentUser);
-	    session.setAttribute("departmentList", departmentList);
-	    
-	    
+	    deptService.generateDepartmentList(session, currentUser);
+
 	    ProfileView userProfile = new ProfileView(currentUser);
 	    model.addAttribute("userProfile", userProfile);
 	    
@@ -93,15 +91,8 @@ public class ProfileController {
 	    if (closedReiviewRoundList.size()<1) {
 		model.addAttribute("emptyList",true);
 	    } else {
-		Integer selectedRoundId = 0;
-		if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
-		    selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
-		    model.addAttribute("selectedRound", reviewRoundService.getById(selectedRoundId));
-		} else {
-		    selectedRoundId = closedReiviewRoundList.get(0).getReviewRoundId();
-		    model.addAttribute("selectedRound",closedReiviewRoundList.get(0));
-		    model.addAttribute("selectedRoundId",selectedRoundId);
-		}
+
+		Integer selectedRoundId = reviewRoundService.autoSelect(model, inputFlashMap, closedReiviewRoundList);
 		
 		ReviewAveragesView reviewAverages = new ReviewAveragesView(currentUser, closedReviewMapByRoundId.get(selectedRoundId));
 		if (reviewAverages.getCommentList().size()>0) {
@@ -128,6 +119,8 @@ public class ProfileController {
     public String goToOpenReviews(@PathVariable String username, HttpServletRequest request, Model model) {
 	HttpSession session = request.getSession();
 	Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+	boolean updateMode = (boolean) session.getAttribute("updateMode");
+	model.addAttribute("updateMode",updateMode);
 	
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
 	    if((boolean) session.getAttribute("allTabs")) {
@@ -140,7 +133,12 @@ public class ProfileController {
 	    HashMap<Integer,List<OpenRoundReviewView>> openReviewMapByRoundId = new HashMap<Integer, List<OpenRoundReviewView>>();
 	    ArrayList<ReviewRound> reiviewRoundListInDept = (ArrayList<ReviewRound>) reviewRoundService.getOpenRoundsByDepartment(currentUser.getDepartment());
 	    for (ReviewRound reviewRound : reiviewRoundListInDept) {
-		ArrayList<Review> reviewsList = (ArrayList<Review>) reviewService.getOpenRoundIncompleteReviews(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
+		ArrayList<Review> reviewsList;
+		if (!updateMode) {
+		    reviewsList = (ArrayList<Review>) reviewService.getOpenRoundIncompleteReviews(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
+		} else {
+		    reviewsList = (ArrayList<Review>) reviewService.getOpenRoundCompletedReviews(reviewRound.getReviewRoundId(), currentUser.getEmployeeId());
+		}
 		if (!(reviewsList.size() < 1)) {
 		    openReiviewRoundList.add(reviewRound);
 		    ArrayList<OpenRoundReviewView> viewObjectList = new ArrayList<OpenRoundReviewView>();
@@ -157,15 +155,9 @@ public class ProfileController {
 	    if (openReiviewRoundList.size()<1) {
 		model.addAttribute("emptyList",true);
 	    } else {
-		Integer selectedRoundId = 0;
-		if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
-		    selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
-		    model.addAttribute("selectedRound", reviewRoundService.getById(selectedRoundId));
-		} else {
-		    selectedRoundId = openReiviewRoundList.get(0).getReviewRoundId();
-		    model.addAttribute("selectedRound",openReiviewRoundList.get(0));
-		    model.addAttribute("selectedRoundId",selectedRoundId);   
-		}
+
+		Integer selectedRoundId = reviewRoundService.autoSelect(model, inputFlashMap, openReiviewRoundList);
+		
 		model.addAttribute("openReviewList",openReviewMapByRoundId.get(selectedRoundId));
 		
 		Integer listIndex = 0;
@@ -208,6 +200,13 @@ public class ProfileController {
 	return "redirect:/profile/"+username+"/OpenReviews";
     }
     
+    @PostMapping("/profile/{username}/OpenReviews/updateMode")
+    public String toggleUpdateMode(@PathVariable String username, HttpServletRequest request, @RequestParam String updateMode) {
+   	boolean mode = updateMode.equals("true") ? true : false;
+   	request.getSession().setAttribute("updateMode", mode);
+   	return "redirect:/profile/"+username+"/OpenReviews";
+    }
+    
     
     @GetMapping("/profile/{username}/TeamReviews")
     public String goToTeamReviews(@PathVariable String username, HttpServletRequest request, Model model) {
@@ -218,55 +217,42 @@ public class ProfileController {
 	    if((boolean) session.getAttribute("allTabs")) {
 		model.addAttribute("allTabs",true);
 	    }
-	    
-	    Employee currentUser = employeeService.getByUsername(username);
-	    
+    
 	    @SuppressWarnings("unchecked")
 	    ArrayList<Department> departmentList = (ArrayList<Department>) session.getAttribute("departmentList");
 	    model.addAttribute("departments", departmentList);
-
+ 
+	    Integer departmentId = deptService.autoSelect(model, inputFlashMap, departmentList);
 	    
-	    Integer departmentId = 0;
-	    if (inputFlashMap != null && inputFlashMap.get("departmentId")!=null) {
-		departmentId = (Integer) inputFlashMap.get("departmentId");
-		model.addAttribute("selectedDept", deptService.getById(departmentId));
-	    } else {
-		departmentId = departmentList.get(0).getDeparmentId();
-		model.addAttribute("selectedDept",departmentList.get(0));
-		model.addAttribute("departmentId",departmentId);   
-	    }
-	    
-	    HashMap<Integer, ArrayList<HashMap<Integer, ArrayList<Review>>>> closedReviewMapByRoundId = new HashMap<Integer, ArrayList<HashMap<Integer,ArrayList<Review>>>>();
 	    Department selectedDept = deptService.getById(departmentId);
 	    ArrayList<ReviewRound> closedRoundListInDept = (ArrayList<ReviewRound>) reviewRoundService.getClosedRoundsByDepartment(selectedDept);
 	    ArrayList<Employee> employeesInDept = (ArrayList<Employee>) employeeService.getByDepartment(selectedDept);
-//	    for (ReviewRound round : closedRoundListInDept) {
-//		ArrayList<HashMap<Integer,ArrayList<Review>>> listOfRecipientAndReviewsInRound = new ArrayList<HashMap<Integer, ArrayList<Review>>>();
-//		for (Employee recipient : employeesInDept) {
-//		    ArrayList<Review> completedReviews = (ArrayList<Review>) reviewService.getClosedRoundCompletedReviews(round.getReviewRoundId(), recipient.getEmployeeId());
-//		    if (completedReviews.size()>0) {
-//			HashMap<Integer,ArrayList<Review>> recipientReviewMap = new HashMap<Integer, ArrayList<Review>>();
-//			recipientReviewMap.put(recipient.getEmployeeId(), completedReviews);
-//			listOfRecipientAndReviewsInRound.add(recipientReviewMap);
-//		    }
-//		}
-//		closedReviewMapByRoundId.put(round.getReviewRoundId(),listOfRecipientAndReviewsInRound);
-//	    }
-	    
-	    model.addAttribute("reiviewRoundList", closedRoundListInDept);
-	    
-	    Integer selectedRoundId = 0;
-	    if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
-		selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
-		model.addAttribute("selectedRound", reviewRoundService.getById(selectedRoundId));
-		model.addAttribute("departmentId",departmentId); 
-	    } else {
-		selectedRoundId = closedRoundListInDept.get(0).getReviewRoundId();
-		model.addAttribute("selectedRound",closedRoundListInDept.get(0));
-		model.addAttribute("selectedRoundId",selectedRoundId);
-		model.addAttribute("departmentId",departmentId); 
+	    HashMap<Integer, ArrayList<ReviewAveragesView>> reviewAverageViewsInRound = new HashMap<Integer, ArrayList<ReviewAveragesView>>();
+	    for (ReviewRound round : closedRoundListInDept) {
+		ArrayList<ReviewAveragesView> reviewAverageList = new ArrayList<ReviewAveragesView>();
+		for (Employee recipient : employeesInDept) {
+		    ArrayList<Review> completedReviews = (ArrayList<Review>) reviewService.getClosedRoundCompletedReviews(round.getReviewRoundId(), recipient.getEmployeeId());
+	
+		    if (completedReviews.size()>0) {
+			ReviewAveragesView recipientAverageView = new ReviewAveragesView(recipient, completedReviews);		
+			reviewAverageList.add(recipientAverageView);
+		    }
+		}
+		
+		if (reviewAverageList.size()>0) {
+		    reviewAverageViewsInRound.put(round.getReviewRoundId(), reviewAverageList);
+		}
 	    }
 	    
+	    model.addAttribute("reiviewRoundList", closedRoundListInDept);
+	        
+	    Integer selectedRoundId = reviewRoundService.autoSelect(model, inputFlashMap, closedRoundListInDept);
+	    
+	    if (reviewAverageViewsInRound.get(selectedRoundId) != null) {
+		model.addAttribute("reviewAverageViewList", reviewAverageViewsInRound.get(selectedRoundId));
+	    } else {
+		model.addAttribute("emptyList",true);
+	    }
 	    return "profile_team_reviews";
 	} else {
 	    return "index";

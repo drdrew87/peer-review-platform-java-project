@@ -2,9 +2,13 @@ package com.fdm.peer_review.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.fdm.peer_review.model.Department;
 import com.fdm.peer_review.model.Employee;
@@ -15,7 +19,7 @@ public class DepartmentService {
     @Autowired
     private DepartmentRepo departmentRepo;
     
-    public List<Department> generateDepartmentList(Employee currentUser) {
+    public void generateDepartmentList(HttpSession session, Employee currentUser) {
 	ArrayList<Department> departmentList = new ArrayList<Department>();
 	    
 	if (currentUser.getPermission().isDepartmentManager()) {
@@ -34,7 +38,7 @@ public class DepartmentService {
 		}
 	    }
 	}
-	return departmentList;
+	session.setAttribute("departmentList", departmentList);
     }
     
     public Department getById(int departmentId) {
@@ -43,5 +47,19 @@ public class DepartmentService {
     
     public List<Department> findAll() {
 	return departmentRepo.findAll();
+    }
+    
+    public Integer autoSelect(Model model, Map<String,?> inputFlashMap, List<Department> deptList) {
+	
+	Integer departmentId = 0;
+	if (inputFlashMap != null && inputFlashMap.get("departmentId")!=null) {
+	    departmentId = (Integer) inputFlashMap.get("departmentId");
+	    model.addAttribute("selectedDept", departmentRepo.getById(departmentId));
+	} else {
+	    departmentId = deptList.get(0).getDeparmentId();
+	    model.addAttribute("selectedDept",deptList.get(0));
+	    model.addAttribute("departmentId",departmentId);   
+	}
+	return departmentId;
     }
 }

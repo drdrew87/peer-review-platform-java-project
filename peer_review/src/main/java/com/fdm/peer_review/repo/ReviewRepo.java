@@ -41,6 +41,10 @@ public interface ReviewRepo extends JpaRepository<Review, ReviewPK>{
     
     Optional<List<Review>> findByReviewRoundIdAndReviewerIdAndCompletionDateIsNull(int reviewRoundId, int employeeId);
     
+    List<Review> getByReviewRoundIdAndReviewerIdAndCompletionDateIsNotNull(int reviewRoundId, int recipientId);
+
+    Optional<List<Review>> findByReviewRoundIdAndReviewerIdAndCompletionDateIsNotNull(int reviewRoundId, int recipientId);
+    
     List<Review> getByReviewRoundIdAndReviewerId(int reviewRoundId, int reviewerId);
     
     Optional<List<Review>> findByReviewRoundIdAndReviewerId(int reviewRoundId, int reviewerId);
@@ -56,6 +60,7 @@ public interface ReviewRepo extends JpaRepository<Review, ReviewPK>{
     List<Review> getByCompletionDateIsNotNullAndReviewRoundIdIn(Collection<Integer> reviewRoundList);
     
     Optional<List<Review>> findByCompletionDateIsNotNullAndReviewRoundIdIn(Collection<Integer> reviewRoundList);
+    
     
     
 

@@ -57,11 +57,29 @@
 
 	<div class="contiainer d-flex justify-content-center">
 		
-		<div th:if="${emptyList}" class="col-10"> 
-			<div class="row">
+		<div th:if="${emptyList}" class="col-12"> 
+			<div class="row col-10">
+
+			<div th:if="${updateMode}">
+					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
+						<button class="col-1 btn btn-secondary mx-3" disabled>Update</button>
+						<button type="submit" name="updateMode" id="updateMode" class="col-1 btn btn-outline-primary" th:value="false">New</button>
+					</form>
+					</div>
+					<div th:unless="${updateMode}">
+					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
+						<button type="submit" name="updateMode" id="updateMode" class="col-1 btn btn-outline-primary mx-3" th:value="true">Update</button>
+						<button class="col-1 btn btn-secondary" disabled>New</button>
+					</form>
+					</div>
+			</div>
+			<div class="row my-3">
 				<div class="container col-8">	
-				<div class="card p-4">
-					No Open Review Available.
+				<div th:if="${updateMode}" class="card p-4 text-center">
+					No completed open review available to update.
+				</div>
+				<div th:unless="${updateMode}" class="card p-4 text-center">
+					No incomplete open review available.
 				</div>
 				</div>
 			</div>
@@ -69,9 +87,17 @@
 		<div th:unless="${emptyList}" class="col-10"> 
 			<div class="row">
 				<div class="container col-6">
+					<table class="col-12 text-center table table-dark table-hover mb-0">
+						<tr>
+							<td class="col-4">Review Round</td>
+							<td class="col-8" th:text="${selectedReview.reviewRoundId}"></td>
+						</tr>
+						<tr>
+							<td class="col-4">Review Recipient</td>
+							<td class="col-8" th:text="${selectedRecipient.firstName} + ' ' + ${selectedRecipient.lastName}"></td>
+						</tr>
+					</table>
 					<div class="card p-4">
-						<p th:text="'Review Round: '+${selectedReview.reviewRoundId}"/>
-						<p th:text="'Review Recipient: '+ ${selectedRecipient.firstName} + ' ' + ${selectedRecipient.lastName}"/>
 						
 						<form th:object="${selectedReview}" th:action="@{/profile/{username}/OpenReviews/submit(username=${username})}" method="post">
 							
@@ -155,7 +181,21 @@
 				</div>
 				
 				<div class="container col-6">
-					<form class="d-grid" th:object="${reiviewRoundList}" th:action="@{/profile/{username}/OpenReviews/ReviewRounds(username=${username})}" method="post">
+					<div th:if="${updateMode}">
+					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
+						<button class="col-2 btn btn-secondary mx-3" disabled>Update</button>
+						<button type="submit" name="updateMode" id="updateMode" class="col-2 btn btn-outline-primary" th:value="false">New</button>
+					</form>
+					</div>
+					<div th:unless="${updateMode}">
+					<form th:action="@{/profile/{username}/OpenReviews/updateMode(username=${username})}" class="d-flex justify-content-end" method="post">
+						<button type="submit" name="updateMode" id="updateMode" class="col-2 btn btn-outline-primary mx-3" th:value="true">Update</button>
+						<button class="col-2 btn btn-secondary" disabled>New</button>
+					</form>
+					</div>
+					
+					
+					<form class="d-grid mt-3" th:object="${reiviewRoundList}" th:action="@{/profile/{username}/OpenReviews/ReviewRounds(username=${username})}" method="post">
 						<div class="form-group">
 							<select onchange="this.form.submit()" class="form-select" id="selectedRoundId" name ="selectedRoundId">
 								<option selected th:object="${selectedRound}" disabled value=""><strong><span th:text="${selectedRound.reviewRoundName}"/></strong></option>

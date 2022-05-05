@@ -2,9 +2,11 @@ package com.fdm.peer_review.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.fdm.peer_review.model.Department;
 import com.fdm.peer_review.model.Employee;
@@ -51,4 +53,17 @@ public class ReviewRoundService {
 	    }
 	}
     }
-}
+    
+    public Integer autoSelect(Model model, Map<String, ?> inputFlashMap, List<ReviewRound> roundList) {
+	Integer selectedRoundId = 0;
+	if (inputFlashMap != null && inputFlashMap.get("selectedRoundId")!=null) {
+	    selectedRoundId = (Integer) inputFlashMap.get("selectedRoundId");
+	    model.addAttribute("selectedRound", reviewRoundRepo.getById(selectedRoundId));
+	} else {
+	    selectedRoundId = roundList.get(0).getReviewRoundId();
+	    model.addAttribute("selectedRound",roundList.get(0));
+	    model.addAttribute("selectedRoundId",selectedRoundId);   
+	}
+	return selectedRoundId;
+    }
+ }

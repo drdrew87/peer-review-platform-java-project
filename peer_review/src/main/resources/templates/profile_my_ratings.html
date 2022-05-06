@@ -92,10 +92,10 @@
 						</div>
 					</form>
 					
-					<div class="card p-4 mt-2">
+					<div class="card p-3 mt-2">
 						<div class="p-4" th:object="${reviewAverages}">
-							
-							<div><strong>Quality of Work</strong></div>
+							<div><strong>Total # of reviews: <span class="fs-5 mx-3" th:text="${reviewAverages.reviewCount}"></strong></div>
+							<div class="mt-3"><strong>Quality of Work</strong></div>
 							<div class="progress">
 								<div class="progress-bar" role="progressbar" th:style="'width:' + ${reviewAverages.averageQualityOfWorkRating}/5*100 +'%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
 							</div>

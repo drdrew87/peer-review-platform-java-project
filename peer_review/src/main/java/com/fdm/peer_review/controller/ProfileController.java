@@ -53,9 +53,7 @@ public class ProfileController {
     public String LogInToProfilePage(@PathVariable String username, HttpServletRequest request, Model model) {
 	HttpSession session = request.getSession();
 	Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-	if (session.getAttribute("updateMode")==null) {
-	    session.setAttribute("updateMode",false);
-	}
+	
 	
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
 	    Employee currentUser = employeeService.getByUsername(username);
@@ -73,6 +71,10 @@ public class ProfileController {
     			session.setAttribute("allTabs", false);
     		    }
     		}
+    	    }
+    	    
+    	    if (session.getAttribute("updateMode")==null) {
+    		session.setAttribute("updateMode",false);
     	    }
 	    
 	    deptService.generateDepartmentList(session, currentUser);
@@ -125,13 +127,15 @@ public class ProfileController {
     public String goToOpenReviews(@PathVariable String username, HttpServletRequest request, Model model) {
 	HttpSession session = request.getSession();
 	Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-	boolean updateMode = (boolean) session.getAttribute("updateMode");
-	model.addAttribute("updateMode",updateMode);
+	
 	
 	if (session!=null && session.getAttribute("username")!=null && username.equals(session.getAttribute("username"))) {
 	    if((boolean) session.getAttribute("allTabs")) {
 		model.addAttribute("allTabs",true);
 	    }
+	    
+	    boolean updateMode = (boolean) session.getAttribute("updateMode");
+	    model.addAttribute("updateMode",updateMode);
 	    
 	    Employee currentUser = employeeService.getByUsername(username);
 	    

@@ -72,9 +72,10 @@
 						<div class="form-floating mt-3 mb-3">
 							<input type="text" th:field="*{userName}" class="form-control" id="username" placeholder="Username" name="username" required/>
 							<label for="username">Userame</label>
-							<div th:if="${accountIsTaken}"  class="alert alert-danger" role="alert" >
+							<div th:if="${accountIsTaken}"  class="alert alert-danger alert-dismissible fade show" role="alert" >
 								<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#exclamation-triangle-fill"/></svg>
 								<strong>Username is taken. Please use another username.</strong>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 							</div>
 						</div>
 					</div>
@@ -134,6 +135,6 @@
 </div>
 	<script th:src="@{/assets/jquery/jquery-3.6.0.min.js}"></script>
 	<script th:src="@{/assets/popper.js/popper.min.js}"></script>
-	<script th:src="@{/assets/bootstrap/js/bootstrap.bundle.js}"></script>
+	<script th:src="@{/assets/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

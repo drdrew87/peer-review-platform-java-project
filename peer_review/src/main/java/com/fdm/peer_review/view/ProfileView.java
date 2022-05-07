@@ -9,7 +9,9 @@ public class ProfileView {
     public ProfileView(Employee user) {
 	super();
 	if (user.getGender()=="M") {
+	
 	    this.profilePic="https://www.pngrepo.com/download/18909/avatar.png";
+	
 	} else {
 	    this.profilePic="https://www.pngrepo.com/download/63357/avatar.png";
 	}

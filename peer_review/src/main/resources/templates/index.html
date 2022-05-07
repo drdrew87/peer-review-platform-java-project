@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Peer Review Platform - Login</title>
 <link th:rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css} "/>
-<script th:src="@{/assets/bootstrap/js/bootstrap.bundle.js}"></script>
+<script th:src="@{/assets/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
 	<symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
 	  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
@@ -43,9 +43,10 @@
 		<form th:action="@{/}" method="post">	
 			<div class="row justify-content-center">
 				<div class="col-5">
-					<div th:if="${registerSuccessful}"  class="alert alert-success" role="alert">
+					<div th:if="${registerSuccessful}"  class="alert alert-success alert-dismissible fade show" role="alert">
 						<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
 						<strong>Registration successful!</strong>
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				<div class="form-floating mt-3 mb-3">
 					<input type="text" class="form-control" id="username" placeholder="Username" name="username" />
@@ -55,9 +56,10 @@
 					<input type="password" class="form-control" id="password" placeholder="Password" name="password" />
 					<label for="password">Password</label> 
 				</div>
-				<div th:if="${invalidLogin}"  class="alert alert-danger" role="alert" >
+				<div th:if="${invalidLogin}"  class="alert alert-danger alert-dismissible fade show" role="alert" >
 					<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
 					<strong>Invalid username or password.</strong>
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
 				<div class="d-grid mb-2">
 					<button type="submit" class="btn btn-outline-primary">Employee login</button>
@@ -76,6 +78,6 @@
 </div>
 	<script th:src="@{/assets/jquery/jquery-3.6.0.min.js}"></script>
 	<script th:src="@{/assets/popper.js/popper.min.js}"></script>
-	<script th:src="@{/assets/bootstrap/js/bootstrap.bundle.js}"></script>
+	<script th:src="@{/assets/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

@@ -198,8 +198,11 @@ public class ProfileController {
     }
     
     @PostMapping("/profile/{username}/OpenReviews/review")
-    public String selectReviewInOpenRound(@PathVariable String username, RedirectAttributes attributes, @RequestParam String listIndex) {
-	attributes.addFlashAttribute("listIndex", Integer.valueOf(listIndex));
+    public String selectReviewInOpenRound(@PathVariable String username, RedirectAttributes attributes, @RequestParam String roundNIndex) {
+	Integer selectedRoundId = Integer.valueOf(roundNIndex.split(",")[0]);
+	Integer listIndex = Integer.valueOf(roundNIndex.split(",")[1]);
+	attributes.addFlashAttribute("selectedRoundId", selectedRoundId);
+	attributes.addFlashAttribute("listIndex", listIndex);
 	return "redirect:/profile/"+username+"/OpenReviews";
     }
     

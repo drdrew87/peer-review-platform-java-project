@@ -212,7 +212,7 @@
 						<form th:action="@{/profile/{username}/OpenReviews/review(username=${username})}" th:object="${openReviewList}" method="post">
 							<div th:each="object : ${openReviewList}">
 								<div class="d-flex justify-content-center my-3">
-								<button class="col-6 btn btn-outline-primary" type="submit" th:value="${object.index}" id="listIndex" name="listIndex"><span th:text="${object.recipient.firstName} + ' ' + ${object.recipient.lastName}" /></button>
+								<button class="col-6 btn btn-outline-primary" type="submit" th:value="${selectedRound.reviewRoundId}+','+${object.index}" id="roundNIndex" name="roundNIndex"><span th:text="${object.recipient.firstName} + ' ' + ${object.recipient.lastName}" /></button>
 								</div>
 							</div>
 						</form>

@@ -15,7 +15,7 @@ import javax.persistence.SequenceGenerator;
 import org.springframework.stereotype.Component;
 
 @Component
-@Entity
+//@Entity
 public class Employee {
     @Id
     @SequenceGenerator(name = "EMP_SEQ_GNTR", sequenceName = "EMP_SEQ")
